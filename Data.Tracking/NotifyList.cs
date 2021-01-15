@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Oarw.Data.Tracking
+namespace Data.Tracking
 {
     /// <summary>
     /// A generic list that subscribes to the property changed notification for all elements in the list and routing them to the lists change notification.

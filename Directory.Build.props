@@ -1,9 +1,13 @@
 <Project>
   <PropertyGroup>
-    <BuildVersion Condition="'$(BuildVersion)' == ''">1.0.0</BuildVersion>
+    <BuildVersion Condition="'$(BuildVersion)' == ''">1.0.2</BuildVersion>
     <Version>$(BuildVersion)</Version>
-    <Company>OProductions Ltd.</Company>
-    <Copyright>Copyright © OProductions Ltd. $(Year:yyyy)</Copyright>
+    <Authors>Oliver Waits</Authors>
+    <Company>OW Productions Ltd.</Company>
+    <Copyright>Copyright © OW Productions Ltd. $(Year:yyyy)</Copyright>
     <ReleaseStream Condition="'$(ReleaseStream)' == ''">CANARY</ReleaseStream>
+    <RepositoryUrl>https://github.com/owaits/Data.Tracking</RepositoryUrl>
+    <PackageTags>Blazor, Database, Tracking, Data, Table</PackageTags>
+    <Description>Provides ability to track changes to data models through watching changes to the selected instances. You are able to determine if the entities have changes to properties, new items have been added or when an item has been deleted. The framework allows you to batch processing of changes and perform updates in single operations. It provides similar functionality to the Micrsoft EntityFramework but on a much lighter basis and without any database component. The framework was specifically designed for Blazor where the data is sent to the client using JSON serialization and then changes are made which need to be sent back to the server in batches.</Description>
   </PropertyGroup>
 </Project>
