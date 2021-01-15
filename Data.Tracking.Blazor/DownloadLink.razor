@@ -1,0 +1,23 @@
+﻿@inject IJSRuntime js
+@inject HttpSecure http
+
+
+
+<button class="@css" @onclick="@(()=>DownloadPdf())">@ChildContent</button>
+
+
+@code {
+    [Parameter]
+    public string url { get; set; }
+
+    [Parameter]
+    public string css { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    async Task DownloadPdf()
+    {
+        await http.NavigateToSecure(url);
+    }
+}

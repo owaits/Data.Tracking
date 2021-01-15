@@ -1,0 +1,91 @@
+﻿@using System.IO
+@inject HttpClient Http
+
+<div class="custom-file d-flex">
+    <InputFile id="uploadAttachment" name="Upload" title="Upload" OnChange="@UploadFile" multiple class="custom-file-input" type="file" capture="environment"/>
+    <!--<input id="uploadAttachment" name="Upload" title="Upload" @ref="upload" class="custom-file-input" type="file" accept="application/pdf" capture="environment" @onchange="@UploadFile" />-->
+    <label class="custom-file-label mr-auto" for="uploadAttachment">
+        <span class="progress-bar" role="progressbar" style="width:@(UploadProgress)%" aria-valuenow="@UploadProgress" aria-valuemin="0" aria-valuemax="100">@uploadMessage</span>
+    </label>
+</div>          
+
+
+    @code {
+
+        private string uploadMessage = "Choose file...";
+
+        private int uploadProgress = 0;
+
+        protected int UploadProgress
+        {
+            get { return uploadProgress; }
+            set
+            {
+                uploadProgress = value;
+
+                if (uploadProgress == 0)
+                    uploadMessage = "Choose file...";
+                else
+                    uploadMessage = $"{uploadProgress}%";
+            }
+        }
+
+        [Parameter]
+        public Func<IBrowserFile, Task<(string url, object state)>> BeginUpload { get; set; }
+
+        [Parameter]
+        public Func<IBrowserFile, object, Task> EndUpload { get; set; }
+
+        [Inject]
+        protected IJSRuntime JavaScript { get; set; }
+
+
+
+        ElementReference upload;
+
+        async Task UploadFile(InputFileChangeEventArgs e)
+        {
+            var files = e.GetMultipleFiles();
+
+            foreach (var file in files)
+            {
+                var upload = await BeginUpload(file);
+
+                if (!string.IsNullOrEmpty(upload.url))
+                {
+                    uploadMessage = file.Name;
+                    StateHasChanged();
+
+                    try
+                    {
+                        //Allow file sizes up to 5 MB
+                        using (Stream stream = file.OpenReadStream(5000000))
+                        {
+                            byte[] buffer = new byte[102400];
+                            int length = 0;
+                            long position = 0;
+                            UploadProgress = 0;
+                            while ((length = (await stream.ReadAsync(buffer, 0, 102400))) > 0)
+                            {
+                                await Http.PutAsJsonAsync(upload.url, System.Convert.ToBase64String(buffer, 0, length));
+                                position += length;
+
+                                UploadProgress = (int)((position * 100) / file.Size);
+                                Console.WriteLine(UploadProgress);
+                                StateHasChanged();
+                            }
+
+                            StateHasChanged();
+                        }
+
+                        if (EndUpload != null)
+                            await EndUpload(file, upload.state);
+                    }
+                    catch (IOException ex)
+                    {
+                        await JavaScript.InvokeVoidAsync("alert",ex.Message);
+                    }
+                }
+            }
+        }
+    }

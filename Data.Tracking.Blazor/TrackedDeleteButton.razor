@@ -1,8 +1,10 @@
 ﻿@using Data.Tracking
 
-<button type="button" class="btn btn-danger btn-sm" @onclick="@(()=>OpenDelete())"><i class="fas fa-backspace" aria-hidden="true"></i></button>
+<button type="button" class="btn btn-danger btn-sm @CssClass" @onclick="@(()=>OpenDelete())"><i class="fas fa-backspace" aria-hidden="true"></i></button>
 
 @code {
+    [Parameter]
+    public string CssClass { get; set; }
 
     [Parameter]
     public ITrackableObject deleteItem { get; set; }

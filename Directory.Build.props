@@ -1,0 +1,9 @@
+<Project>
+  <PropertyGroup>
+    <BuildVersion Condition="'$(BuildVersion)' == ''">1.0.0</BuildVersion>
+    <Version>$(BuildVersion)</Version>
+    <Company>OProductions Ltd.</Company>
+    <Copyright>Copyright © OProductions Ltd. $(Year:yyyy)</Copyright>
+    <ReleaseStream Condition="'$(ReleaseStream)' == ''">CANARY</ReleaseStream>
+  </PropertyGroup>
+</Project>

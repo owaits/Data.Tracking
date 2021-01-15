@@ -88,7 +88,7 @@ namespace Data.Tracking.Blazor
                     if (itemToSave.IsModified())
                     {
                         //Put the changes to the edit item on the server.
-                        await Http.PutAsJsonAsync(url, itemToSave);
+                        await Http.PutAsJsonAsync(url, new[] { itemToSave });
 
                         //After we have saved these changes to the server, start tracking again to reset changes.
                         itemToSave.StartTracking();
