@@ -1,0 +1,62 @@
+﻿@using Data.Tracking
+
+<tr style="@(DetermineTextDecoration())" class="@(DetermineRowStyle())">
+    @ChildContent
+</tr>
+
+
+@code {
+
+    ITrackableObject entity = null;
+
+    [Parameter]
+    public ITrackableObject Entity
+    {
+        get { return entity; }
+        set
+        {
+            if (entity != value)
+            {
+                entity = value;
+            }
+        }
+    }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public Func<bool> ShowWarning { get; set; }
+
+    private bool IsWarning()
+    {
+        if (ShowWarning == null)
+            return false;
+        return ShowWarning();
+    }
+
+    private string DetermineTextDecoration()
+    {
+        if (Entity.IsDeleted())
+            return "text-decoration: line-through !important ";
+        if (Entity.IsNew())
+            return "font-weight: bold !important ";
+
+        return string.Empty;
+    }
+
+    private string DetermineRowStyle()
+    {
+        if (Entity.HasChanges())
+            return "table-active";
+
+        if (Entity.IsPrintRequired())
+            return "table-info";
+
+        if (IsWarning())
+            return "table-warning";
+
+        return string.Empty;
+    }
+
+}

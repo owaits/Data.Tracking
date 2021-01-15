@@ -1,0 +1,118 @@
+﻿@using Data.Tracking
+@using System.Text.Json
+@inject HttpClient Http
+@inject NavigationManager Url;
+
+<CascadingValue Value=this>
+    @ChildContent
+</CascadingValue>
+
+@if (HasChanges() || IsPrintRequired())
+{
+    <div class="fixed-bottom p-1 text-white @(string.IsNullOrEmpty(errorMessage) ? "bg-dark" : "bg-danger")">
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            @(errorMessage)
+        }
+        else if (NextAutoSave != null)
+        {
+            @($"Auto update in {Math.Max(0,((DateTime) NextAutoSave).Subtract(DateTime.Now).TotalSeconds).ToString("0")}s")
+        }
+
+
+
+
+        <button class="float-right btn btn-primary @((HasChanges())? "":"disabled")" @onclick="@(()=>ConfirmUpdate())"><i class="fas fa-circle-check" aria-hidden="true"></i>  Update</button>
+        <button class="float-right mr-1 btn btn-secondary @((HasChanges() || IsPrintRequired())? "":"disabled")" @onclick="@(()=>CancelUpdate())"><i class="fas fa-times-circle" aria-hidden="true"></i> Cancel</button>
+    </div>
+
+    <!--Spacer to allow for floating confirmation bars at the bottom -->
+    <div class="p-5" />
+}
+
+
+
+@code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public TimeSpan? AutoSaveInterval { get; set; }
+
+    public DateTime? NextAutoSave { get; set; }
+
+    private string errorMessage { get; set; }
+
+    private string selectedPrintProfile { get; set; }
+
+    private HashSet<ITrackedUpdateItem> updates = new HashSet<ITrackedUpdateItem>();
+
+    public HashSet<ITrackedUpdateItem> Updates { get { return updates; } }
+
+    private System.Timers.Timer autoSaveTimer;
+
+    [Parameter]
+    public Action afterUpdate { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        if (AutoSaveInterval != null)
+        {
+            autoSaveTimer = new System.Timers.Timer(500);
+            autoSaveTimer.Elapsed += AutoSave;
+            autoSaveTimer.Enabled = true;
+        }
+    }
+
+    private void AutoSave(Object source, System.Timers.ElapsedEventArgs e)
+    {
+        if (AutoSaveInterval != null)
+        {
+            if (NextAutoSave != null && HasChanges())
+            {
+                if (((DateTime)NextAutoSave).Subtract(DateTime.Now).TotalSeconds < 0)
+                {
+                    NextAutoSave = null;
+                    Task.Run(() => ConfirmUpdate());
+                }
+                else
+                {
+                    StateHasChanged();
+                }
+            }
+            else
+            {
+                NextAutoSave = DateTime.Now.Add((TimeSpan)AutoSaveInterval);
+            }
+        }
+    }
+
+    public bool HasChanges()
+    {
+        return Updates.Any(item => item.HasChanges());
+    }
+
+    public bool IsPrintRequired()
+    {
+        return Updates.Any(item => item.IsPrintRequired());
+    }
+
+    public async Task CancelUpdate()
+    {
+        foreach (var item in Updates)
+            await item.CancelUpdate();
+    }
+
+    public async Task ConfirmUpdate()
+    {
+        foreach (var item in Updates)
+            await item.ConfirmUpdate();
+
+        if (afterUpdate != null)
+        {
+            afterUpdate();
+        }
+    }
+}

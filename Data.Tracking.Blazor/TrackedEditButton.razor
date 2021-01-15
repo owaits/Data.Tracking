@@ -1,0 +1,51 @@
+﻿@using Data.Tracking
+
+@if (EditItem == null)
+{
+    <button type="button" class="btn btn-primary btn-sm" @onclick="@(()=>StartEdit())" data-toggle="modal" data-target="#trackedEditor">
+        @if (ButtonContent != null) { 
+            @ButtonContent
+        } else {
+            <span><i class="fas fa-plus" aria-hidden="true"></i> Add</span>
+        }
+    </button>
+}
+else
+{
+    <button type="button" class="btn btn-primary btn-sm" @onclick="@(()=>StartEdit())" data-toggle="modal" data-target="#trackedEditor"><i class="fas fa-edit" aria-hidden="true"></i></button>
+}
+
+@code {
+
+    private string EditorId { get { return Editor != null ? Editor.EditorId.ToString() : "trackedEditor";  } }
+
+    [CascadingParameter]
+    public ITrackedEditor Editor { get; set; }
+
+
+    [Parameter]
+    public Func<ITrackedEditor> GetEditor { get; set; }
+
+    [Parameter]
+    public ITrackableObject EditItem { get; set; }
+
+    [Parameter]
+    public Func<ITrackableObject> Create { get; set; }
+
+    [Parameter]
+    public RenderFragment ButtonContent { get; set; }
+
+    void StartEdit()
+    {
+        if(Create != null)
+        {
+            Editor.StartCreate(Create());
+
+        }
+        else
+        {
+            Editor.StartEdit(EditItem);
+        }
+
+    }
+}
