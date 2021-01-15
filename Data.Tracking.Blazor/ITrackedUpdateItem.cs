@@ -14,5 +14,7 @@ namespace Data.Tracking.Blazor
         Task CancelUpdate();
 
         Task ConfirmUpdate();
+
+        Task ConfirmPrint();
     }
 }

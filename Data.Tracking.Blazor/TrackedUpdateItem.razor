@@ -6,6 +6,7 @@
 
 @inject HttpClient Http
 @inject NavigationManager Url;
+@inject ITrackedPrintService print;
 @typeparam TItem
 @implements ITrackedUpdateItem
 
@@ -111,5 +112,16 @@
             errorMessage = ex.Message;
             Console.WriteLine("Error: " + ex.Message);
         }
+    }
+
+    public async Task ConfirmPrint()
+    {
+        var itemsToPrint = editItems.Where(item => item.IsPrintRequired());
+        print.Print(itemsToPrint);
+
+        foreach (var item in editItems)
+            item.ClearPrint();
+
+        await Task.CompletedTask;
     }
 }

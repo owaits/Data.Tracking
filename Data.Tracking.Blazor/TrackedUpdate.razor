@@ -2,6 +2,7 @@
 @using System.Text.Json
 @inject HttpClient Http
 @inject NavigationManager Url;
+@inject ITrackedPrintService print;
 
 <CascadingValue Value=this>
     @ChildContent
@@ -9,21 +10,48 @@
 
 @if (HasChanges() || IsPrintRequired())
 {
-    <div class="fixed-bottom p-1 text-white @(string.IsNullOrEmpty(errorMessage) ? "bg-dark" : "bg-danger")">
-        @if (!string.IsNullOrEmpty(errorMessage))
-        {
-            @(errorMessage)
-        }
-        else if (NextAutoSave != null)
-        {
-            @($"Auto update in {Math.Max(0,((DateTime) NextAutoSave).Subtract(DateTime.Now).TotalSeconds).ToString("0")}s")
-        }
+<div class="fixed-bottom p-1 text-white @(string.IsNullOrEmpty(errorMessage) ? "bg-dark" : "bg-danger")">
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        @(errorMessage)
+    }
+    else if (NextAutoSave != null)
+    {
+        @($"Auto update in {Math.Max(0,((DateTime) NextAutoSave).Subtract(DateTime.Now).TotalSeconds).ToString("0")}s")
+    }
 
 
 
 
-        <button class="float-right btn btn-primary @((HasChanges())? "":"disabled")" @onclick="@(()=>ConfirmUpdate())"><i class="fas fa-circle-check" aria-hidden="true"></i>  Update</button>
-        <button class="float-right mr-1 btn btn-secondary @((HasChanges() || IsPrintRequired())? "":"disabled")" @onclick="@(()=>CancelUpdate())"><i class="fas fa-times-circle" aria-hidden="true"></i> Cancel</button>
+    <button class="float-right btn btn-primary @((HasChanges())? "":"disabled")" @onclick="@(()=>ConfirmUpdate())"><i class="fas fa-circle-check" aria-hidden="true"></i>  Update</button>
+    <button class="float-right mr-1 btn btn-secondary @((HasChanges() || IsPrintRequired())? "":"disabled")" @onclick="@(()=>CancelUpdate())"><i class="fas fa-times-circle" aria-hidden="true"></i> Cancel</button>
+
+    @if (IsPrintRequired())
+    {
+
+        <a role="button" class="float-right btn btn-info mr-2" @onclick="@(() => Print())"><i class="oi oi-print" aria-hidden="true"></i> Print</a>
+
+        <select class="form-control float-right mr-2" style="width: 200px" @bind="print.SelectedProfileId">
+            @if (string.IsNullOrEmpty(print.SelectedProfileId))
+            {
+                <option value="" disabled selected>--Select Print Profile --</option>
+            }
+
+            @foreach (var profile in print.Profiles)
+            {
+                if (profile.Id == print.SelectedProfileId)
+                {
+                    <option selected>@profile.Name</option>
+                }
+                else
+                {
+                    <option>@profile.Name</option>
+                }
+            }
+        </select>
+    }
+
+
     </div>
 
     <!--Spacer to allow for floating confirmation bars at the bottom -->
@@ -109,6 +137,17 @@
     {
         foreach (var item in Updates)
             await item.ConfirmUpdate();
+
+        if (afterUpdate != null)
+        {
+            afterUpdate();
+        }
+    }
+
+    protected async Task Print()
+    {
+        foreach (var item in Updates)
+            await item.ConfirmPrint();
 
         if (afterUpdate != null)
         {
