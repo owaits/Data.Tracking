@@ -65,7 +65,7 @@ namespace Data.Tracking
         private static bool ShouldAllowProperty(PropertyInfo property)
         {
             var trackingAttribute = property.GetCustomAttribute<TrackingAttribute>();
-            if(trackingAttribute != null)
+            if (trackingAttribute != null)
             {
                 return !trackingAttribute.Ignore;
             }
@@ -92,24 +92,24 @@ namespace Data.Tracking
 
         public static void StopTracking(this ITrackableObject source)
         {
-            if(trackedObjects != null)
+            if (trackedObjects != null)
             {
                 trackedObjects.Remove(source);
-            }            
+            }
         }
 
-        public static IList<TEntity> MergeTracking<TEntity>(this IList<TEntity> target, IList<TEntity> source) where TEntity: ITrackableObject
+        public static IList<TEntity> MergeTracking<TEntity>(this IList<TEntity> target, IList<TEntity> source) where TEntity : ITrackableObject
         {
             //Go through the new data and apply any modifications to the target.
             foreach (ITrackableObject targetItem in target)
             {
                 ITrackableObject sourceItem = null;
-                
-                if(source != null)
+
+                if (source != null)
                     sourceItem = source.FirstOrDefault(item => item.Id == targetItem.Id);
-                
-                if(sourceItem != null)
-                {                    
+
+                if (sourceItem != null)
+                {
                     targetItem.MergeTracking(sourceItem);
                 }
                 else
@@ -119,9 +119,9 @@ namespace Data.Tracking
             }
 
             //Go through the deleted items and apply them to the new data.
-            if(source != null)
+            if (source != null)
             {
-                foreach (ITrackableObject sourceItem in source.Where(item=>item.IsDeleted()))
+                foreach (ITrackableObject sourceItem in source.Where(item => item.IsDeleted()))
                 {
                     ITrackableObject targetItem = target.FirstOrDefault(item => item.Id == sourceItem.Id);
                     if (targetItem != null)
@@ -132,11 +132,11 @@ namespace Data.Tracking
             }
 
             //Go through the added items and apply them to the new data.
-            if(source != null)
+            if (source != null)
             {
                 foreach (ITrackableObject sourceItem in source.Where(item => item.IsNew()))
                 {
-                    target.Add((TEntity) sourceItem);
+                    target.Add((TEntity)sourceItem);
                 }
             }
 
@@ -153,13 +153,13 @@ namespace Data.Tracking
                 if (property.PropertyType != typeof(TrackingState) && ShouldAllowProperty(property))
                 {
                     targetTracker.UnmodifiedState.Add(property, property.GetValue(target));
-                    
-                    if(sourceTracker.UnmodifiedState.TryGetValue(property,out object sourceUnmodifiedValue))
+
+                    if (sourceTracker.UnmodifiedState.TryGetValue(property, out object sourceUnmodifiedValue))
                     {
-                        if(IsPropertyModified(source,property, sourceUnmodifiedValue))
+                        if (IsPropertyModified(source, property, sourceUnmodifiedValue))
                             property.SetValue(target, property.GetValue(source));
                     }
-                }                    
+                }
             }
 
             trackedObjects[target] = targetTracker;
@@ -168,7 +168,7 @@ namespace Data.Tracking
 
         public static bool IsTracking(this IEnumerable<ITrackableObject> source)
         {
-            return source.All(item=> item.IsTracking());
+            return source.All(item => item.IsTracking());
         }
 
         public static bool IsTracking(this ITrackableObject source)
@@ -203,7 +203,7 @@ namespace Data.Tracking
 
         public static void Undo(this IEnumerable<ITrackableObject> source)
         {
-            foreach(var item in source)
+            foreach (var item in source)
                 item.Undo();
         }
 
@@ -214,7 +214,7 @@ namespace Data.Tracking
             tracker.Added = false;
             tracker.Print = false;
             foreach (var property in tracker.UnmodifiedState)
-            {               
+            {
                 if (property.Value == null)
                 {
                     if (property.Key.GetValue(source) != null)
@@ -236,42 +236,118 @@ namespace Data.Tracking
         /// <param name="onChangedDelegate">The on changed delegate.</param>
         public static void WhenChanged(this IEnumerable<ITrackableObject> source, Action onChangedDelegate)
         {
-            foreach(ITrackableObject item in source)
+            TrackingCache cache = new TrackingCache();
+            foreach (ITrackableObject item in source)
             {
-                item.WhenChanged(onChangedDelegate);
+                WhenChanged(item, onChangedDelegate, cache);
             }
         }
 
         public static void WhenChanged(this ITrackableObject item, Action onChangedDelegate)
         {
-                TrackingState tracker = GetTracker(item);
-                tracker.OnChanged = onChangedDelegate;
+            TrackingCache cache = new TrackingCache();
+            WhenChanged(item, onChangedDelegate, cache);
+
+        }
+
+        internal static void WhenChanged(ITrackableObject item, Action onChangedDelegate, TrackingCache cache)
+        {
+            TrackingState tracker = GetTracker(item);
+            tracker.OnChanged = onChangedDelegate;
+
+            PropertyInfo[] properties;
+            if (!cache.Properties.TryGetValue(item.GetType(), out properties))
+            {
+                properties = item.GetType().GetProperties();
+                cache.Properties[item.GetType()] = properties;
+            }
+
+            foreach (var property in properties)
+            {
+                if (property.PropertyType != typeof(TrackingState) && ShouldAllowProperty(property, cache))
+                {
+                    var value = property.GetValue(item);
+                    if (property.PropertyType.IsGenericType && property.PropertyType.IsAssignableTo(typeof(System.Collections.IEnumerable)))
+                    {
+                        System.Collections.IEnumerable list = (System.Collections.IEnumerable)value;
+                        foreach (object subItem in list)
+                        {
+                            ITrackableObject trackedItem = subItem as ITrackableObject;
+                            if (trackedItem != null)
+                            {
+                                WhenChanged(trackedItem, onChangedDelegate, cache);
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         public static bool IsDeleted(this ITrackableObject source)
         {
             TrackingState tracker = GetTracker(source);
-            return tracker.Deleted;
+            return IsDeleted(source, tracker);
         }
+
         private static bool IsDeleted(ITrackableObject source, TrackingState tracker)
         {
-            return tracker.Deleted;
+            //If the parent object is deleted then no need to check children.
+            if (tracker.Deleted)
+                return true;
+
+            foreach (var property in tracker.UnmodifiedState)
+            {
+                if (property.Key.PropertyType.IsGenericType && property.Key.PropertyType.IsAssignableTo(typeof(System.Collections.IEnumerable)))
+                {
+                    System.Collections.IEnumerable list = (System.Collections.IEnumerable)property.Value;
+                    foreach (object item in list)
+                    {
+                        ITrackableObject trackedItem = item as ITrackableObject;
+                        if (trackedItem != null)
+                        {
+                            if (IsDeleted(trackedItem))
+                                return true;
+                        }
+                    }
+                }
+            }
+            return false;
         }
 
         public static bool IsNew(this ITrackableObject source)
         {
             TrackingState tracker = GetTracker(source);
-            return tracker.Added;
+            return IsNew(source, tracker);
         }
         private static bool IsNew(ITrackableObject source, TrackingState tracker)
         {
-            return tracker.Added;
+            //If the parent object is added then no need to check children.
+            if (tracker.Added)
+                return true;
+
+            foreach (var property in tracker.UnmodifiedState)
+            {
+                if (property.Key.PropertyType.IsGenericType && property.Key.PropertyType.IsAssignableTo(typeof(System.Collections.IEnumerable)))
+                {
+                    System.Collections.IEnumerable list = (System.Collections.IEnumerable)property.Value;
+                    foreach (object item in list)
+                    {
+                        ITrackableObject trackedItem = item as ITrackableObject;
+                        if (trackedItem != null)
+                        {
+                            if (IsNew(trackedItem))
+                                return true;
+                        }
+                    }
+                }
+            }
+            return false;
         }
 
         public static bool IsModified(this ITrackableObject source, bool includeAddDelete = false)
         {
             TrackingState tracker = GetTracker(source);
-            return IsModified(source, tracker,includeAddDelete);
+            return IsModified(source, tracker, includeAddDelete);
         }
 
         private static bool IsModified(ITrackableObject source, TrackingState tracker, bool includeAddDelete = false)
@@ -281,13 +357,13 @@ namespace Data.Tracking
 
             foreach (var property in tracker.UnmodifiedState)
             {
-                if(property.Key.PropertyType.IsGenericType && property.Key.PropertyType.IsAssignableTo(typeof(System.Collections.IEnumerable)))
+                if (property.Key.PropertyType.IsGenericType && property.Key.PropertyType.IsAssignableTo(typeof(System.Collections.IEnumerable)))
                 {
                     System.Collections.IEnumerable list = (System.Collections.IEnumerable)property.Value;
                     foreach (object item in list)
                     {
                         ITrackableObject trackedItem = item as ITrackableObject;
-                        if(trackedItem != null)
+                        if (trackedItem != null)
                         {
                             if (IsModified(trackedItem, true))
                                 return true;
