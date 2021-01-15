@@ -9,7 +9,7 @@ using System.Linq;
 namespace Data.Tracking.Test
 {
     [TestClass]
-    public class UnitTest1
+    public class TrackingExtensionTests
     {
         public int TrackableObject { get; private set; }
 
@@ -63,6 +63,34 @@ namespace Data.Tracking.Test
             timer5.Stop();
             Assert.IsTrue(timer5.ElapsedMilliseconds < 5, $"Stop tracking took too long, it should have been under 5ms but actually took {timer5.Elapsed}");
 
+        }
+
+        [TestMethod]
+        public void TrackingDelete()
+        {
+            var testEntity = GenerateTestObjects(1).First();
+
+            //Parent Item Delete
+            testEntity.StartTracking();
+            testEntity.Delete();
+
+            Assert.IsTrue(testEntity.IsModified(true));
+            Assert.IsFalse(testEntity.IsModified(false));
+            Assert.IsFalse(testEntity.Children.First().IsModified());
+
+            Assert.IsTrue(testEntity.IsDeleted());
+            Assert.IsFalse(testEntity.Children.First().IsDeleted());
+
+            //Child Item Delete
+            testEntity.StartTracking();
+            testEntity.Children.First().Delete();
+
+            Assert.IsTrue(testEntity.IsModified(true));
+            //Assert.IsFalse(testEntity.IsModified(false));
+            Assert.IsTrue(testEntity.Children.First().IsModified(true));
+
+            Assert.IsTrue(testEntity.IsDeleted());
+            Assert.IsTrue(testEntity.Children.First().IsDeleted());
         }
     }
 }
