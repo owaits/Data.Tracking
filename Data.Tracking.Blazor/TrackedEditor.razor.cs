@@ -23,7 +23,7 @@ namespace Oarw.Data.Tracking.Blazor
         public string url { get; set; }
 
         [Parameter]
-        public RenderFragment<ITrackableObject> EditModal { get; set; }
+        public RenderFragment<TItem> EditModal { get; set; }
 
         [Parameter]
         public RenderFragment ChildContent { get; set; }
