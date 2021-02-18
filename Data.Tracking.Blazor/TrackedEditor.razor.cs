@@ -1,4 +1,4 @@
-﻿using Data.Tracking;
+﻿using Oarw.Data.Tracking;
 using System.Net.Http;
 using Microsoft.JSInterop;
 using System.Threading.Tasks;
@@ -6,7 +6,7 @@ using System.Net.Http.Json;
 using System;
 using Microsoft.AspNetCore.Components;
 
-namespace Data.Tracking.Blazor
+namespace Oarw.Data.Tracking.Blazor
 {
     public partial class TrackedEditor<TItem>: ITrackedEditor where TItem: class, ITrackableObject
     {

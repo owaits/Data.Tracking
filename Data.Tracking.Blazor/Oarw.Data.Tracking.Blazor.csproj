@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Data.Tracking\Data.Tracking.csproj" />
+    <ProjectReference Include="..\Data.Tracking\Oarw.Data.Tracking.csproj" />
   </ItemGroup>
 
 </Project>

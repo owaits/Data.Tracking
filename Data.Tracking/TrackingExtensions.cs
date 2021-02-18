@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
 using System.Linq;
 
-namespace Data.Tracking
+namespace Oarw.Data.Tracking
 {
     public static class TrackingExtensions
     {

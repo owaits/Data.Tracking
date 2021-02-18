@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Rendering;
 
-namespace Data.Tracking.Blazor
+namespace Oarw.Data.Tracking.Blazor
 {
     public class InputDateTime<TValue> : InputDate<TValue>
     {

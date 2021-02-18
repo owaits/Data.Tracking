@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace Data.Tracking.Helpers
+namespace Oarw.Data.Tracking.Helpers
 {
     public static class DataHelper
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Data.Tracking.Blazor
+namespace Oarw.Data.Tracking.Blazor
 {
     public interface ITrackedEditor
     {

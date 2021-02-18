@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Data.Tracking.Blazor.Extensions
+namespace Oarw.Data.Tracking.Blazor.Extensions
 {
     public static class NavigationManagerExtensions
     {

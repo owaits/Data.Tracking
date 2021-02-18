@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
-using Data.Tracking;
+using Oarw.Data.Tracking;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Data.Tracking.Test.TestData
+namespace Oarw.Data.Tracking.Test.TestData
 {
     [TestClass]
     public class NotifyListTests

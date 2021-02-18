@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Data.Tracking
+namespace Oarw.Data.Tracking
 {
     public interface ITrackableObject
     {
