@@ -13,5 +13,7 @@ namespace Data.Tracking.Blazor
         void StartCreate(ITrackableObject editItem);
 
         void StartEdit(ITrackableObject editItem);
+
+        Task SaveEdit();
     }
 }

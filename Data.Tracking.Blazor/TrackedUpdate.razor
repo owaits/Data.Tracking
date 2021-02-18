@@ -80,6 +80,9 @@
     private System.Timers.Timer autoSaveTimer;
 
     [Parameter]
+    public Func<bool> beforeUpdate { get; set; }
+
+    [Parameter]
     public Action afterUpdate { get; set; }
 
     protected override void OnInitialized()
@@ -135,6 +138,11 @@
 
     public async Task ConfirmUpdate()
     {
+        if (beforeUpdate != null)
+        {
+            beforeUpdate();
+        }
+
         foreach (var item in Updates)
             await item.ConfirmUpdate();
 
