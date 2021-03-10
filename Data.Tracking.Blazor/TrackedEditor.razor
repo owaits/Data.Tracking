@@ -9,16 +9,17 @@
 <div class="modal fade" id="trackedEditor" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
-
             @if (EditItem != null)
             {
-                <div class="modal-header">
+                <EditForm Model="EditItem" OnValidSubmit="@(() => SaveEdit())">
 
-                    <h4 class="modal-title">@(Create ? "New " + Title : "Edit " + Title)</h4>
-                    <button type="button" class="close" @onclick="@(() => CancelEdit())" data-dismiss="modal"><i class="oi oi-x" /></button>
-                </div>
-                <div class="modal-body">
-                    <EditForm Model="EditItem" OnValidSubmit="@(() => SaveEdit())">
+                    <div class="modal-header">
+
+                        <h4 class="modal-title">@(Create ? "New " + Title : "Edit " + Title)</h4>
+                        <button type="button" class="close" @onclick="@(() => CancelEdit())" data-dismiss="modal"><i class="oi oi-x" /></button>
+                    </div>
+                    <div class="modal-body">
+
                         <DataAnnotationsValidator />
 
                         @EditModal(EditItem)
@@ -26,13 +27,13 @@
                         <div class="alert-danger">
                             <ValidationSummary class="text-danger" />
                         </div>
-                    </EditForm>
-                </div>
+                    </div>               
+                    <div class=" modal-footer">
+                        <button class="btn btn-default" type="submit">Save</button>
+                        <button class="btn btn-default" @onclick="@(() => CancelEdit())" data-dismiss="modal">Cancel</button>
+                    </div>
+                </EditForm>
             }
-            <div class=" modal-footer">
-                <button class="btn btn-default" type="submit">Save</button>
-                <button class="btn btn-default" @onclick="@(() => CancelEdit())" data-dismiss="modal">Cancel</button>
-            </div>
         </div>
 
     </div>
