@@ -18,13 +18,19 @@
                     <button type="button" class="close" @onclick="@(() => CancelEdit())" data-dismiss="modal"><i class="oi oi-x" /></button>
                 </div>
                 <div class="modal-body">
-                    <EditForm Model="EditItem">
+                    <EditForm Model="EditItem" OnValidSubmit="@(() => SaveEdit())">
+                        <DataAnnotationsValidator />
+
                         @EditModal(EditItem)
+
+                        <div class="alert-danger">
+                            <ValidationSummary class="text-danger" />
+                        </div>
                     </EditForm>
                 </div>
             }
             <div class=" modal-footer">
-                <button class="btn btn-default" @onclick="@(() => SaveEdit())" data-dismiss="modal">Save</button>
+                <button class="btn btn-default" type="submit">Save</button>
                 <button class="btn btn-default" @onclick="@(() => CancelEdit())" data-dismiss="modal">Cancel</button>
             </div>
         </div>
@@ -35,12 +41,3 @@
 <CascadingValue Value="this">
     @ChildContent
 </CascadingValue>
-
-
-@code {
-
-
-
-
-    
-}
