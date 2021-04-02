@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace Oarw.Data.Tracking.Blazor
 {
-    public class ITrackedPrintProfile
+    public interface ITrackedPrintProfile
     {
-        public string Id { get; set; }
+        string Id { get; set; }
 
-        public string Name { get; set; }
+        string Name { get; set; }
 
-        public string Description { get; set; }
+        string Description { get; set; }
     }
 }
