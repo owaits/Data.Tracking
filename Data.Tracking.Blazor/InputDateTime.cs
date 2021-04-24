@@ -12,6 +12,15 @@ namespace Oarw.Data.Tracking.Blazor
 {
     public class InputDateTime<TValue> : InputDate<TValue>
     {
+        /// <summary>
+        /// Gets or sets whether the bound time is in UTC and should be input as the users local time.
+        /// </summary>
+        /// <remarks>
+        /// Use this to allow a user to edit a UTC time using there local time zone. When false the bound time will be shown and not converted.
+        /// </remarks>
+        [Parameter]
+        public bool Localize { get; set; } = false;
+
         private const string DateFormat = "yyyy-MM-ddTHH:mm";
 
         /// <inheritdoc />
@@ -32,9 +41,9 @@ namespace Oarw.Data.Tracking.Blazor
             switch (value)
             {
                 case DateTime dateTimeValue:
-                    return BindConverter.FormatValue(dateTimeValue, DateFormat, CultureInfo.InvariantCulture);
+                    return BindConverter.FormatValue(Localize ? dateTimeValue.ToLocalTime() : dateTimeValue, DateFormat, CultureInfo.InvariantCulture);
                 case DateTimeOffset dateTimeOffsetValue:
-                    return BindConverter.FormatValue(dateTimeOffsetValue, DateFormat, CultureInfo.InvariantCulture);
+                    return BindConverter.FormatValue(Localize ? dateTimeOffsetValue.ToLocalTime() : dateTimeOffsetValue, DateFormat, CultureInfo.InvariantCulture);
                 default:
                     return string.Empty; // Handles null for Nullable<DateTime>, etc.
             }
@@ -50,11 +59,11 @@ namespace Oarw.Data.Tracking.Blazor
             bool success;
             if (targetType == typeof(DateTime))
             {
-                success = TryParseDateTime(value, out result);
+                success = TryParseDateTime(value, Localize, out result);
             }
             else if (targetType == typeof(DateTimeOffset))
             {
-                success = TryParseDateTimeOffset(value, out result);
+                success = TryParseDateTimeOffset(value,Localize, out result);
             }
             else
             {
@@ -73,12 +82,15 @@ namespace Oarw.Data.Tracking.Blazor
             }
         }
 
-        static bool TryParseDateTime(string value, out TValue result)
+        static bool TryParseDateTime(string value, bool localize, out TValue result)
         {
             var success = BindConverter.TryConvertToDateTime(value, CultureInfo.InvariantCulture, DateFormat, out var parsedValue);
             if (success)
             {
-                result = (TValue)(object)parsedValue;
+                if(localize)
+                    result = (TValue)(object)parsedValue.ToUniversalTime();
+                else
+                    result = (TValue)(object)parsedValue;
                 return true;
             }
             else
@@ -88,12 +100,15 @@ namespace Oarw.Data.Tracking.Blazor
             }
         }
 
-        static bool TryParseDateTimeOffset(string value, out TValue result)
+        static bool TryParseDateTimeOffset(string value, bool localize, out TValue result)
         {
             var success = BindConverter.TryConvertToDateTimeOffset(value, CultureInfo.InvariantCulture, DateFormat, out var parsedValue);
             if (success)
             {
-                result = (TValue)(object)parsedValue;
+                if (localize)
+                    result = (TValue)(object)parsedValue.ToUniversalTime();
+                else
+                    result = (TValue)(object)parsedValue;
                 return true;
             }
             else
