@@ -2,7 +2,7 @@
 
 @if (EditItem == null)
 {
-    <button type="button" class="btn btn-primary btn-sm" @onclick="@(()=>StartEdit())" data-toggle="modal" data-target="#trackedEditor">
+    <button type="button" class="btn btn-primary btn-sm" @onclick="@(()=>StartEdit())" data-toggle="modal" data-target="#trackedEditor_@(EditorId)">
         @if (ButtonContent != null) { 
             @ButtonContent
         } else {
@@ -12,7 +12,7 @@
 }
 else
 {
-    <button type="button" class="btn btn-primary btn-sm" @onclick="@(()=>StartEdit())" data-toggle="modal" data-target="#trackedEditor"><i class="fas fa-edit" aria-hidden="true"></i></button>
+    <button type="button" class="btn btn-primary btn-sm" @onclick="@(()=>StartEdit())" data-toggle="modal" data-target="#trackedEditor_@(EditorId)"><i class="fas fa-edit" aria-hidden="true"></i></button>
 }
 
 @code {

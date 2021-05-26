@@ -10,7 +10,7 @@ namespace Oarw.Data.Tracking.Blazor
 {
     public partial class TrackedEditor<TItem>: ITrackedEditor where TItem: class, ITrackableObject
     {
-        public Guid EditorId { get; set; }
+        public Guid EditorId { get; set; } = Guid.NewGuid();
 
         private bool Create { get; set; }
 
@@ -62,7 +62,7 @@ namespace Oarw.Data.Tracking.Blazor
             EditItem = null;
             Create = false;
 
-            JsRuntime.InvokeAsync<string>("closeModal", "#trackedEditor");
+            JsRuntime.InvokeAsync<string>("closeModal", $"#trackedEditor_{EditorId}");
 
             if (OnCancelEdit != null)
                 OnCancelEdit(Create, EditItem);
