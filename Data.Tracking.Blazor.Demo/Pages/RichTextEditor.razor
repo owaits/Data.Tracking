@@ -1,0 +1,25 @@
+﻿@page "/rte"
+
+<h1>Rich Text Editor</h1>
+
+@((MarkupString)Text)
+
+<EditForm Model="@this">
+    <Oarw.Data.Tracking.Blazor.RichTextEditor @bind-Value="@Text" />
+</EditForm>
+
+@code {
+
+    private string text = "Sheep Sheep Sheep";
+
+    public string Text
+{
+get{return text;}
+set
+{
+    text = value;
+StateHasChanged();
+}
+}
+
+}
