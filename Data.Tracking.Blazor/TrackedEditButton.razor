@@ -2,17 +2,19 @@
 
 @if (EditItem == null)
 {
-    <button type="button" class="btn btn-primary btn-sm" @onclick="@(()=>StartEdit())" data-toggle="modal" data-target="#trackedEditor_@(EditorId)">
+    <button type="button" class="@CssClass" @onclick="@(()=>StartEdit())" data-toggle="modal" data-target="#trackedEditor_@(EditorId)">
         @if (ButtonContent != null) { 
             @ButtonContent
-        } else {
+        }
+        else if(EditItem == null)
+        {
             <span><i class="fas fa-plus" aria-hidden="true"></i> Add</span>
         }
+        else
+        {
+            <i class="fas fa-edit" aria-hidden="true"></i>
+        }
     </button>
-}
-else
-{
-    <button type="button" class="btn btn-primary btn-sm" @onclick="@(()=>StartEdit())" data-toggle="modal" data-target="#trackedEditor_@(EditorId)"><i class="fas fa-edit" aria-hidden="true"></i></button>
 }
 
 @code {
@@ -34,6 +36,9 @@ else
 
     [Parameter]
     public RenderFragment ButtonContent { get; set; }
+
+    [Parameter]
+    public string CssClass { get; set; } = "btn btn-primary btn-sm";
 
     void StartEdit()
     {
