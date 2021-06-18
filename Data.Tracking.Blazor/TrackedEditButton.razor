@@ -1,22 +1,19 @@
 ﻿@using Oarw.Data.Tracking
 
-@if (EditItem == null)
-{
-    <button type="button" class="@CssClass" @onclick="@(()=>StartEdit())" data-toggle="modal" data-target="#trackedEditor_@(EditorId)">
-        @if (ChildContent != null) 
-        { 
-            @ChildContent
-        }
-        else if(EditItem == null)
-        {
-            <span><i class="fas fa-plus" aria-hidden="true"></i> Add</span>
-        }
-        else
-        {
-            <i class="fas fa-edit" aria-hidden="true"></i>
-        }
-    </button>
-}
+<button type="button" class="@CssClass" @onclick="@(()=>StartEdit())" data-toggle="modal" data-target="#trackedEditor_@(EditorId)">
+    @if (ChildContent != null) 
+    { 
+        @ChildContent
+    }
+    else if(EditItem == null)
+    {
+        <span><i class="fas fa-plus" aria-hidden="true"></i> Add</span>
+    }
+    else
+    {
+        <i class="fas fa-edit" aria-hidden="true"></i>
+    }
+</button>
 
 @code {
 
