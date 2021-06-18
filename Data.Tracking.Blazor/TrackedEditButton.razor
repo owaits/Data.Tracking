@@ -3,8 +3,9 @@
 @if (EditItem == null)
 {
     <button type="button" class="@CssClass" @onclick="@(()=>StartEdit())" data-toggle="modal" data-target="#trackedEditor_@(EditorId)">
-        @if (ButtonContent != null) { 
-            @ButtonContent
+        @if (ChildContent != null) 
+        { 
+            @ChildContent
         }
         else if(EditItem == null)
         {
