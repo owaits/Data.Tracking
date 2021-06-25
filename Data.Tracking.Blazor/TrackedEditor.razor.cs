@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Net.Http.Json;
 using System;
 using Microsoft.AspNetCore.Components;
+using System.Collections.Generic;
 
 namespace Oarw.Data.Tracking.Blazor
 {
@@ -23,6 +24,9 @@ namespace Oarw.Data.Tracking.Blazor
         public string url { get; set; }
 
         [Parameter]
+        public string ModalCSS { get; set; }
+
+        [Parameter]
         public RenderFragment<TItem> EditModal { get; set; }
 
         [Parameter]
@@ -39,6 +43,13 @@ namespace Oarw.Data.Tracking.Blazor
 
         [Parameter]
         public Action<bool, ITrackableObject> OnCancelEdit { get; set; }
+
+        private HashSet<ITrackedUpdateItem> bindings = new HashSet<ITrackedUpdateItem>();
+
+        public HashSet<ITrackedUpdateItem> Bindings
+        {
+            get { return bindings; }
+        }
 
         public void StartEdit(ITrackableObject editItem)
         {
