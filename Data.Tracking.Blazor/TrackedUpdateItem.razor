@@ -34,6 +34,9 @@
     [Parameter]
     public Action afterUpdate { get; set; }
 
+    [Parameter]
+    public RenderFragment<TItem> EditContent { get; set; }
+
 
     protected override void OnInitialized()
     {
@@ -90,7 +93,11 @@
             {
                 foreach (var itemToDelete in deletes)
                 {
-                    await Http.DeleteAsync(url + $"/{itemToDelete.Id}");
+                    if(itemToDelete.IsDeleted(out IEnumerable<ITrackableObject> subDeleteItems))
+                    {
+                        foreach(var item in subDeleteItems)
+                            await Http.DeleteAsync(url + $"/{item.Id}");
+                    }
                 }
 
                 deletes.StartTracking();
@@ -104,8 +111,6 @@
             {
                 afterUpdate();
             }
-
-
         }
         catch (Exception ex)
         {

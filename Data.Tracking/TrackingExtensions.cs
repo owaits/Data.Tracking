@@ -190,9 +190,14 @@ namespace Oarw.Data.Tracking
             tracker.Deleted = true;
         }
 
-        public static void New(this ITrackableObject source)
+        public static void New(this ITrackableObject source, ITrackableObject parent = null)
         {
-            var tracker = source.StartTracking();
+            var tracker = source.StartTracking();           
+            if(parent != null)
+            {
+                var parentTracker = GetTracker(parent);
+                tracker.OnChanged = parentTracker.OnChanged;
+            }
             tracker.Added = true;
         }
 
@@ -283,18 +288,30 @@ namespace Oarw.Data.Tracking
             }
         }
 
+
         public static bool IsDeleted(this ITrackableObject source)
         {
             TrackingState tracker = GetTracker(source);
-            return IsDeleted(source, tracker);
+            return IsDeleted(source, tracker, null);
         }
 
-        private static bool IsDeleted(ITrackableObject source, TrackingState tracker)
+        public static bool IsDeleted(this ITrackableObject source, out IEnumerable<ITrackableObject> deletedItems)
+        {
+            TrackingState tracker = GetTracker(source);
+            deletedItems = new List<ITrackableObject>();
+            return IsDeleted(source, tracker, (List<ITrackableObject>) deletedItems);
+        }
+
+        private static bool IsDeleted(ITrackableObject source, TrackingState tracker, List<ITrackableObject> deletedItems)
         {
             //If the parent object is deleted then no need to check children.
             if (tracker.Deleted)
+            {
+                deletedItems?.Add(tracker.TrackedObject);
                 return true;
+            }
 
+            bool hasDeletes = false;
             foreach (var property in tracker.UnmodifiedState)
             {
                 if (property.Key.PropertyType.IsGenericType && property.Key.PropertyType.IsAssignableTo(typeof(System.Collections.IEnumerable)))
@@ -305,13 +322,17 @@ namespace Oarw.Data.Tracking
                         ITrackableObject trackedItem = item as ITrackableObject;
                         if (trackedItem != null)
                         {
-                            if (IsDeleted(trackedItem))
-                                return true;
+                            if (IsDeleted(trackedItem, GetTracker(trackedItem), deletedItems))
+                            {
+                                if(deletedItems == null)
+                                    return true;
+                                hasDeletes = true;
+                            }                                
                         }
                     }
                 }
             }
-            return false;
+            return hasDeletes;
         }
 
         public static bool IsNew(this ITrackableObject source)
@@ -365,7 +386,7 @@ namespace Oarw.Data.Tracking
                         ITrackableObject trackedItem = item as ITrackableObject;
                         if (trackedItem != null)
                         {
-                            if (IsModified(trackedItem, true))
+                            if (IsModified(trackedItem, includeAddDelete))
                                 return true;
                         }
                     }
@@ -403,7 +424,7 @@ namespace Oarw.Data.Tracking
             if (IsNew(source, tracker))
                 return true;
 
-            if (IsDeleted(source, tracker))
+            if (IsDeleted(source, tracker,null))
                 return true;
 
             return IsModified(source, tracker);
