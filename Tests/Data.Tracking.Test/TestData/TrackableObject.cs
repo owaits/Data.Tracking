@@ -17,5 +17,7 @@ namespace Oarw.Data.Tracking.TestData
         public string Description { get; set; }
 
         public List<TrackableSubObject> Children { get; set; } = new List<TrackableSubObject>();
+
+        public TrackableSubObject Child { get; set; } = new TrackableSubObject();
     }
 }

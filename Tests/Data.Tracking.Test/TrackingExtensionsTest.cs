@@ -66,6 +66,27 @@ namespace Oarw.Data.Tracking.Test
         }
 
         [TestMethod]
+        public void TrackingChanges()
+        {
+            var testEntity = GenerateTestObjects(1).First();
+
+            //Test changes to parent
+            testEntity.StartTracking();
+            testEntity.Name = "Probe 1";
+            Assert.IsTrue(testEntity.HasChanges());
+
+            //Test changes to single child
+            testEntity.StartTracking();
+            testEntity.Child.Name = "Probe 2";
+            Assert.IsTrue(testEntity.HasChanges());
+
+            //Test changes to multiple children.
+            testEntity.StartTracking();
+            testEntity.Children.First().Name = "Probe 3";
+            Assert.IsTrue(testEntity.HasChanges());
+        }
+
+        [TestMethod]
         public void TrackingDelete()
         {
             var testEntity = GenerateTestObjects(1).First();

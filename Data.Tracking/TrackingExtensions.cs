@@ -53,6 +53,14 @@ namespace Oarw.Data.Tracking
                             }
                         }
                     }
+                    else if (property.PropertyType.IsAssignableTo(typeof(ITrackableObject)))
+                    {
+                        ITrackableObject trackedItem = value as ITrackableObject;
+                        if (trackedItem != null)
+                        {
+                            StartTracking(trackedItem, cache);
+                        }
+                    }
 
                     tracker.UnmodifiedState.Add(property, value);
                 }
@@ -391,6 +399,15 @@ namespace Oarw.Data.Tracking
                         }
                     }
                 }
+                else if (property.Key.PropertyType.IsAssignableTo(typeof(ITrackableObject)))
+                {
+                    ITrackableObject trackedItem = property.Value as ITrackableObject;
+                    if (trackedItem != null)
+                    {
+                        if (IsModified(trackedItem, includeAddDelete))
+                            return true;
+                    }
+                }
                 else
                 {
                     if (IsPropertyModified(source, property.Key, property.Value))
@@ -410,7 +427,8 @@ namespace Oarw.Data.Tracking
             }
             else
             {
-                if (!referenceValue.Equals(property.GetValue(source)))
+                var propertyValue = property.GetValue(source);
+                if (!referenceValue.Equals(propertyValue))
                     return true;
             }
 
