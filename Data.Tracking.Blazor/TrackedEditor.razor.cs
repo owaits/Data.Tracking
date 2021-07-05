@@ -96,7 +96,7 @@ namespace Oarw.Data.Tracking.Blazor
                 }
                 else
                 {
-                    if (itemToSave.IsModified())
+                    if (itemToSave.IsModified(true))
                     {
                         //Put the changes to the edit item on the server.
                         await Http.PutAsJsonAsync(url, new[] { itemToSave });
