@@ -401,7 +401,7 @@ namespace Oarw.Data.Tracking
                 }
                 else if (property.Key.PropertyType.IsAssignableTo(typeof(ITrackableObject)))
                 {
-                    ITrackableObject trackedItem = property.Value as ITrackableObject;
+                    ITrackableObject trackedItem = property.Key.GetValue(source) as ITrackableObject;
                     if (trackedItem != null)
                     {
                         if (IsModified(trackedItem, includeAddDelete))

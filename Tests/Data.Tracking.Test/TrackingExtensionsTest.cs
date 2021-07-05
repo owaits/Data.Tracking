@@ -113,5 +113,42 @@ namespace Oarw.Data.Tracking.Test
             Assert.IsTrue(testEntity.IsDeleted());
             Assert.IsTrue(testEntity.Children.First().IsDeleted());
         }
+
+        [TestMethod]
+        public void TrackingNew()
+        {
+            var testEntity = GenerateTestObjects(1).First();
+
+            //Parent Item Delete
+            testEntity.StartTracking();
+            testEntity.New();
+
+            Assert.IsTrue(testEntity.IsModified(true));
+            Assert.IsFalse(testEntity.IsModified(false));
+            Assert.IsFalse(testEntity.Children.First().IsModified());
+
+            Assert.IsTrue(testEntity.IsNew());
+            Assert.IsFalse(testEntity.Children.First().IsNew());
+
+            //Children Item New
+            testEntity.StartTracking();
+            testEntity.Children.First().New();
+
+            Assert.IsTrue(testEntity.IsModified(true));
+            Assert.IsFalse(testEntity.IsModified(false));
+            Assert.IsTrue(testEntity.Children.First().IsModified(true));
+
+            Assert.IsTrue(testEntity.IsNew());
+            Assert.IsTrue(testEntity.Children.First().IsNew());
+
+            //Child New
+            testEntity.Child = null;
+            testEntity.StartTracking();
+            testEntity.Child = new TrackableSubObject() { Id = Guid.NewGuid() };
+            testEntity.Child.New();
+            Assert.IsTrue(testEntity.IsModified(true));
+            Assert.IsFalse(testEntity.IsModified(false));
+
+        }
     }
 }
