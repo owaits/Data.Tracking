@@ -151,6 +151,51 @@ namespace Oarw.Data.Tracking
             return target;
         }
 
+        //public static void MergeTracking<TEntity>(this System.Collections.IEnumerable target, System.Collections.IEnumerable source)
+        //{
+        //    //Go through the new data and apply any modifications to the target.
+        //    foreach (ITrackableObject targetItem in target)
+        //    {
+        //        ITrackableObject sourceItem = null;
+
+        //        if (source != null)
+        //            sourceItem = source.FirstOrDefault(item => item.Id == targetItem.Id);
+
+        //        if (sourceItem != null)
+        //        {
+        //            targetItem.MergeTracking(sourceItem);
+        //        }
+        //        else
+        //        {
+        //            targetItem.StartTracking();
+        //        }
+        //    }
+
+        //    //Go through the deleted items and apply them to the new data.
+        //    if (source != null)
+        //    {
+        //        foreach (ITrackableObject sourceItem in source.Where(item => item.IsDeleted()))
+        //        {
+        //            ITrackableObject targetItem = target.FirstOrDefault(item => item.Id == sourceItem.Id);
+        //            if (targetItem != null)
+        //            {
+        //                targetItem.Delete();
+        //            }
+        //        }
+        //    }
+
+        //    ////Go through the added items and apply them to the new data.
+        //    //if (source != null)
+        //    //{
+        //    //    foreach (ITrackableObject sourceItem in source.Where(item => item.IsNew()))
+        //    //    {
+        //    //        target.Add((TEntity)sourceItem);
+        //    //    }
+        //    //}
+
+        //    return target;
+        //}
+
         public static TrackingState MergeTracking(this ITrackableObject target, ITrackableObject source)
         {
             TrackingState targetTracker = new TrackingState(target);
@@ -158,7 +203,31 @@ namespace Oarw.Data.Tracking
 
             foreach (var property in target.GetType().GetProperties())
             {
-                if (property.PropertyType != typeof(TrackingState) && ShouldAllowProperty(property))
+                if (property.PropertyType.IsGenericType && property.PropertyType.IsAssignableTo(typeof(System.Collections.IEnumerable)))
+                {
+                    System.Collections.IEnumerable list = (System.Collections.IEnumerable)property.GetValue(target);
+                    MergeTracking((dynamic) list, (dynamic) property.GetValue(source));
+                }
+                else if (property.PropertyType.IsAssignableTo(typeof(ITrackableObject)))
+                {
+                    ITrackableObject sourceItem = property.GetValue(source) as ITrackableObject;
+                    if(sourceItem != null)
+                    {
+                        if(sourceItem.IsNew() || sourceItem.IsDeleted())
+                        {
+                            property.SetValue(target, sourceItem);
+                        }
+                        else
+                        {
+                            ITrackableObject trackedItem = property.GetValue(target) as ITrackableObject;
+                            if (trackedItem != null)
+                            {
+                                trackedItem.MergeTracking(sourceItem);                      
+                            }
+                        }
+                    }
+                }
+                else if (property.PropertyType != typeof(TrackingState) && ShouldAllowProperty(property))
                 {
                     targetTracker.UnmodifiedState.Add(property, property.GetValue(target));
 

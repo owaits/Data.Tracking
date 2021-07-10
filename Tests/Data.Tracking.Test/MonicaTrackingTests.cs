@@ -4,30 +4,17 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using Oarw.Data.Tracking.TestData;
 
 namespace Monica.Data.Test
 {
     [TestClass]
     public class TrackingTests
     {
-        private class TrackableTestObject : ITrackableObject
-        {
-            public Guid Id { get; set; }
-
-            public int IntValue { get; set; }
-
-            public string TextValue { get; set; }
-
-            [NotMapped]
-            public string NotMappedValue { get; set; }
-
-            public TrackingState Tracking { get; set; }
-        }
-
         [TestMethod]
         public void HasChangedTest()
         {
-            TrackableTestObject context = new TrackableTestObject();
+            TrackableObject context = new TrackableObject();
 
             context.StartTracking();
             Assert.IsFalse(context.HasChanges());
@@ -49,7 +36,7 @@ namespace Monica.Data.Test
         [TestMethod]
         public void MergeTrackingEntityTest()
         {
-            TrackableTestObject context1 = new TrackableTestObject();
+            TrackableObject context1 = new TrackableObject();
 
             context1.StartTracking();
             Assert.IsFalse(context1.HasChanges());
@@ -57,13 +44,36 @@ namespace Monica.Data.Test
             context1.IntValue = 2;
             Assert.IsTrue(context1.HasChanges());
 
-            TrackableTestObject context2 = new TrackableTestObject();
+            var testSubItem = new TrackableSubObject() { Name = "Sub 1" };
+            testSubItem.New();
+            context1.Children.Add(testSubItem);
+
+            Assert.IsTrue(context1.Children[0].HasChanges());
+            Assert.IsTrue(context1.Children[0].IsNew());
+
+            context1.Child = new TrackableSubObject() { Name = "Child 1" };
+            context1.Child.New();
+
+            TrackableObject context2 = new TrackableObject();
+            context2.Children.Add(new TrackableSubObject() {  Name ="Sub 2"});
+            context2.Children.Add(new TrackableSubObject() { Name = "Sub 3" });
+
             context2.MergeTracking(context1);
 
             //Have the changes from context 1 been merged onto context 2?
             //If the merge was successful we should see changes merged onto context 2
             Assert.AreEqual(context1.IntValue, context2.IntValue);
             Assert.IsTrue(context2.HasChanges());
+
+            Assert.IsFalse(context2.Children[0].HasChanges());
+            Assert.IsFalse(context2.Children[1].HasChanges());
+
+            Assert.IsTrue(context2.Children[2].HasChanges());
+            Assert.IsTrue(context2.Children[2].IsNew());
+
+            Assert.IsNotNull(context2.Child);
+            Assert.IsTrue(context2.Child.IsNew());
+
         }
 
         [TestMethod]
@@ -71,17 +81,17 @@ namespace Monica.Data.Test
         {
             Guid[] ids = new Guid[] { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() };
 
-            List<TrackableTestObject> contextList = new List<TrackableTestObject>()
+            List<TrackableObject> contextList = new List<TrackableObject>()
             {
-                new TrackableTestObject() { Id = ids[0], TextValue = "Modify 1" },
-                new TrackableTestObject() { Id = ids[1], TextValue = "Modify 2" },
-                new TrackableTestObject() { Id = ids[2], TextValue = "Delete 102" }
+                new TrackableObject() { Id = ids[0], TextValue = "Modify 1" },
+                new TrackableObject() { Id = ids[1], TextValue = "Modify 2" },
+                new TrackableObject() { Id = ids[2], TextValue = "Delete 102" }
             };
 
             contextList.StartTracking();
             Assert.IsFalse(contextList.HasChanges());
 
-            TrackableTestObject contextAdd = new TrackableTestObject() { Id = ids[3], TextValue = "Add 101" };
+            TrackableObject contextAdd = new TrackableObject() { Id = ids[3], TextValue = "Add 101" };
             contextList.Add(contextAdd);
             contextAdd.New();
             Assert.IsTrue(contextList.HasChanges());
@@ -89,11 +99,11 @@ namespace Monica.Data.Test
             contextList.First(item => item.Id == ids[2]).Delete();
 
 
-            List<TrackableTestObject> merge = new List<TrackableTestObject>()
+            List<TrackableObject> merge = new List<TrackableObject>()
             {
-                new TrackableTestObject() { Id = ids[0], TextValue = "Modify 1" },
-                new TrackableTestObject() { Id = ids[1], TextValue = "Modify 2" },
-                new TrackableTestObject() { Id = ids[2], TextValue = "Delete 102" }
+                new TrackableObject() { Id = ids[0], TextValue = "Modify 1" },
+                new TrackableObject() { Id = ids[1], TextValue = "Modify 2" },
+                new TrackableObject() { Id = ids[2], TextValue = "Delete 102" }
             };
 
             merge.MergeTracking(contextList);
@@ -111,7 +121,7 @@ namespace Monica.Data.Test
         {
             int changesDetected = 0;
 
-            TrackableTestObject context = new TrackableTestObject();
+            TrackableObject context = new TrackableObject();
             context.StartTracking();
             context.WhenChanged(() => changesDetected++);
 
