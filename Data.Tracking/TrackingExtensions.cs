@@ -203,35 +203,40 @@ namespace Oarw.Data.Tracking
 
             foreach (var property in target.GetType().GetProperties())
             {
-                if (property.PropertyType.IsGenericType && property.PropertyType.IsAssignableTo(typeof(System.Collections.IEnumerable)))
-                {
-                    System.Collections.IEnumerable list = (System.Collections.IEnumerable)property.GetValue(target);
-                    MergeTracking((dynamic) list, (dynamic) property.GetValue(source));
-                }
-                else if (property.PropertyType.IsAssignableTo(typeof(ITrackableObject)))
-                {
-                    ITrackableObject sourceItem = property.GetValue(source) as ITrackableObject;
-                    if(sourceItem != null)
-                    {
-                        if(sourceItem.IsNew() || sourceItem.IsDeleted())
-                        {
-                            property.SetValue(target, sourceItem);
-                        }
-                        else
-                        {
-                            ITrackableObject trackedItem = property.GetValue(target) as ITrackableObject;
-                            if (trackedItem != null)
-                            {
-                                trackedItem.MergeTracking(sourceItem);                      
-                            }
-                        }
-                    }
-                }
-                else if (property.PropertyType != typeof(TrackingState) && ShouldAllowProperty(property))
+                
+                if (property.PropertyType != typeof(TrackingState) && ShouldAllowProperty(property))
                 {
                     targetTracker.UnmodifiedState.Add(property, property.GetValue(target));
 
-                    if (sourceTracker.UnmodifiedState.TryGetValue(property, out object sourceUnmodifiedValue))
+                    if (property.PropertyType.IsGenericType && property.PropertyType.IsAssignableTo(typeof(System.Collections.IEnumerable)))
+                    {
+                        dynamic targetList = property.GetValue(target);
+                        if (targetList != null)
+                        {
+                            dynamic sourceList = property.GetValue(source);
+                            MergeTracking(targetList, sourceList);
+                        }
+                    }
+                    else if (property.PropertyType.IsAssignableTo(typeof(ITrackableObject)))
+                    {
+                        ITrackableObject sourceItem = property.GetValue(source) as ITrackableObject;
+                        if (sourceItem != null)
+                        {
+                            if (sourceItem.IsNew() || sourceItem.IsDeleted())
+                            {
+                                property.SetValue(target, sourceItem);
+                            }
+                            else
+                            {
+                                ITrackableObject trackedItem = property.GetValue(target) as ITrackableObject;
+                                if (trackedItem != null)
+                                {
+                                    trackedItem.MergeTracking(sourceItem);
+                                }
+                            }
+                        }
+                    }
+                    else if (sourceTracker.UnmodifiedState.TryGetValue(property, out object sourceUnmodifiedValue))
                     {
                         if (IsPropertyModified(source, property, sourceUnmodifiedValue))
                             property.SetValue(target, property.GetValue(source));

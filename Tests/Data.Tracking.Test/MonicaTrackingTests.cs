@@ -47,6 +47,7 @@ namespace Monica.Data.Test
             var testSubItem = new TrackableSubObject() { Name = "Sub 1" };
             testSubItem.New();
             context1.Children.Add(testSubItem);
+            Assert.IsTrue(context1.IsNew());
 
             Assert.IsTrue(context1.Children[0].HasChanges());
             Assert.IsTrue(context1.Children[0].IsNew());
@@ -74,6 +75,10 @@ namespace Monica.Data.Test
             Assert.IsNotNull(context2.Child);
             Assert.IsTrue(context2.Child.IsNew());
 
+            var postMergeSubItem = new TrackableSubObject() { Name = "Sub 4" };
+            postMergeSubItem.New();
+            context2.Children.Add(postMergeSubItem);
+            Assert.IsTrue(context2.IsNew());
         }
 
         [TestMethod]
