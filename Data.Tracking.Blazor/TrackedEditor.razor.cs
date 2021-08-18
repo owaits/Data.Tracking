@@ -101,6 +101,15 @@ namespace Oarw.Data.Tracking.Blazor
                         //Put the changes to the edit item on the server.
                         await Http.PutAsJsonAsync(url, new[] { itemToSave });
 
+                        //Delete any child items that require deletion.
+                        if (itemToSave.IsDeleted(out IEnumerable<ITrackableObject> subDeleteItems))
+                        {
+                            foreach (var item in subDeleteItems)
+                            {
+                                await Http.DeleteAsync(url + $"/{item.Id}");
+                            }                                
+                        }
+
                         //After we have saved these changes to the server, start tracking again to reset changes.
                         itemToSave.StartTracking();
                     }

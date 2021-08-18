@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
@@ -43,14 +44,32 @@ namespace Oarw.Data.Tracking
                     if (property.PropertyType.IsGenericType && property.PropertyType.IsAssignableTo(typeof(System.Collections.IEnumerable)))
                     {
                         System.Collections.IEnumerable list = (System.Collections.IEnumerable)value;
+                        
 
+                        List<ITrackableObject> deletedItems = new List<ITrackableObject>();
                         foreach (object item in list)
                         {
                             ITrackableObject trackedItem = item as ITrackableObject;
                             if (trackedItem != null)
                             {
-                                StartTracking(trackedItem, cache);
+                                if(trackedItem.IsTracking() && trackedItem.IsDeleted())
+                                {
+                                    deletedItems.Add(trackedItem);
+                                    StopTracking(trackedItem);
+                                }
+                                else
+                                {
+                                    StartTracking(trackedItem, cache);
+                                }                                
                             }
+                        }
+
+                        //Remove any items we detected as having been deleted.
+                        IList editableList = list as IList;
+                        if(editableList != null)
+                        {
+                            foreach (var removeItem in deletedItems)
+                                editableList.Remove(removeItem);
                         }
                     }
                     else if (property.PropertyType.IsAssignableTo(typeof(ITrackableObject)))
