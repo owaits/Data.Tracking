@@ -107,11 +107,16 @@ namespace Oarw.Data.Tracking.Test
             testEntity.Children.First().Delete();
 
             Assert.IsTrue(testEntity.IsModified(true));
-            //Assert.IsFalse(testEntity.IsModified(false));
+            Assert.IsFalse(testEntity.IsModified(false));
             Assert.IsTrue(testEntity.Children.First().IsModified(true));
+            Assert.IsFalse (testEntity.Children.First().IsModified(false));
 
             Assert.IsTrue(testEntity.IsDeleted());
             Assert.IsTrue(testEntity.Children.First().IsDeleted());
+
+            testEntity.IsDeleted(out var deletedItems);
+            Assert.AreEqual(1, deletedItems.Count());
+            Assert.AreEqual(testEntity.Children.First(), deletedItems.First());
         }
 
         [TestMethod]
