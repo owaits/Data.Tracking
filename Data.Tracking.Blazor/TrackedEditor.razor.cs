@@ -70,13 +70,19 @@ namespace Oarw.Data.Tracking.Blazor
 
         public void CancelEdit()
         {
+            ITrackableObject trackedEditItem = (ITrackableObject) EditItem;
+            if(trackedEditItem.IsTracking())
+            {
+                trackedEditItem.Undo();
+            }
+
             EditItem = null;
             Create = false;
 
             JsRuntime.InvokeAsync<string>("closeModal", $"#trackedEditor_{EditorId}");
 
             if (OnCancelEdit != null)
-                OnCancelEdit(Create, EditItem);
+                OnCancelEdit(Create, trackedEditItem);
         }
 
         public async Task SaveEdit()

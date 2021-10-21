@@ -313,7 +313,7 @@ namespace Oarw.Data.Tracking
                 item.Undo();
         }
 
-        private static void Undo(this ITrackableObject source)
+        public static void Undo(this ITrackableObject source)
         {
             TrackingState tracker = GetTracker(source);
             tracker.Deleted = false;
