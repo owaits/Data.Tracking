@@ -27,6 +27,8 @@ namespace Oarw.Data.Tracking.Blazor
 
         private System.Timers.Timer autoSaveTimer;
 
+        public IEnumerable<TrackedUpdateError> Errors { get; set; }
+
         [Parameter]
         public Func<bool> beforeUpdate { get; set; }
 
@@ -91,8 +93,11 @@ namespace Oarw.Data.Tracking.Blazor
                 beforeUpdate();
             }
 
+            List<TrackedUpdateError> errors = new List<TrackedUpdateError>();
             foreach (var item in Updates)
-                await item.ConfirmUpdate();
+                errors.AddRange(await item.ConfirmUpdate());
+
+            Errors = errors;
 
             if (afterUpdate != null)
             {
@@ -109,6 +114,13 @@ namespace Oarw.Data.Tracking.Blazor
             {
                 afterUpdate();
             }
+        }
+
+
+        private void ClearError(TrackedUpdateError error)
+        {
+            Errors = Errors.Where(item => item != error);
+            StateHasChanged();
         }
 
         public async ValueTask DisposeAsync()

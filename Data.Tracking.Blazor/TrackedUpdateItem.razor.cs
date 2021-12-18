@@ -23,10 +23,6 @@ namespace Oarw.Data.Tracking.Blazor
         [CascadingParameter]
         public TrackedUpdate UpdateContainer { get; set; }
 
-        private string errorMessage { get; set; }
-
-        private string selectedPrintProfile { get; set; }
-
         [Parameter]
         public IEnumerable<ITrackableObject> editItems { get; set; }
 
@@ -69,32 +65,43 @@ namespace Oarw.Data.Tracking.Blazor
             await Task.CompletedTask;
         }
 
-        public async Task ConfirmUpdate()
+        public async Task<IEnumerable<TrackedUpdateError>> ConfirmUpdate()
         {
-
+            List<TrackedUpdateError> errors = new List<TrackedUpdateError>();
             try
             {
                 IEnumerable<ITrackableObject> additions = editItems.Where(item => item.IsNew()).ToList();
                 if (additions.Any())
                 {
-                    await Http.PostAsJsonAsync(url, additions.Cast<TItem>());
+                    var response = await Http.PostAsJsonAsync(url, additions.Cast<TItem>());
+
+                    if(!response.IsSuccessStatusCode)
+                    {
+                        errors.Add(new TrackedUpdateError()
+                        {
+                            Title = "Failed to Create",
+                            Message = await response.Content.ReadAsStringAsync()
+                        });                       
+                    }
+
                     additions.StartTracking();
-                }
-                else
-                {
-                    Console.WriteLine("Nothing to Add");
                 }
 
                 ICollection<ITrackableObject> updates = editItems.Where(item => item.IsModified()).ToList();
 
                 if (updates.Any())
                 {
-                    await Http.PutAsJsonAsync(url, updates.Cast<TItem>());
+                    var response = await Http.PutAsJsonAsync(url, updates.Cast<TItem>());
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        errors.Add(new TrackedUpdateError()
+                        {
+                            Title = "Failed to Update",
+                            Message = await response.Content.ReadAsStringAsync()
+                        });
+                    }
+
                     updates.StartTracking();
-                }
-                else
-                {
-                    Console.WriteLine("Nothing to Update");
                 }
 
                 IEnumerable<ITrackableObject> deletes = editItems.Where(item => item.IsDeleted()).ToList();
@@ -105,15 +112,21 @@ namespace Oarw.Data.Tracking.Blazor
                         if (itemToDelete.IsDeleted(out IEnumerable<ITrackableObject> subDeleteItems))
                         {
                             foreach (var item in subDeleteItems)
-                                await Http.DeleteAsync(url + $"/{item.Id}");
+                            {
+                                var response = await Http.DeleteAsync(url + $"/{item.Id}");
+                                if (!response.IsSuccessStatusCode)
+                                {
+                                    errors.Add(new TrackedUpdateError()
+                                    {
+                                        Title = "Failed to Delete",
+                                        Message = await response.Content.ReadAsStringAsync()
+                                    });
+                                }
+                            }                                
                         }
                     }
 
                     deletes.StartTracking();
-                }
-                else
-                {
-                    Console.WriteLine("Nothing to Delete");
                 }
 
                 if (afterUpdate != null)
@@ -123,20 +136,40 @@ namespace Oarw.Data.Tracking.Blazor
             }
             catch (Exception ex)
             {
-                errorMessage = ex.Message;
-                Console.WriteLine("Error: " + ex.Message);
+                errors.Add(new TrackedUpdateError()
+                {
+                    Title = "Error",
+                    Message = ex.Message
+                });
             }
+
+            return errors;
         }
 
-        public async Task ConfirmPrint()
+        public async Task<IEnumerable<TrackedUpdateError>> ConfirmPrint()
         {
-            var itemsToPrint = editItems.Where(item => item.IsPrintRequired());
-            print.Print(itemsToPrint);
+            List<TrackedUpdateError> errors = new List<TrackedUpdateError>();
 
-            foreach (var item in editItems)
-                item.ClearPrint();
+            try
+            {
+                var itemsToPrint = editItems.Where(item => item.IsPrintRequired());
+                print.Print(itemsToPrint);
 
-            await Task.CompletedTask;
+                foreach (var item in editItems)
+                    item.ClearPrint();
+
+                await Task.CompletedTask;
+            }
+            catch (Exception ex)
+            {
+                errors.Add(new TrackedUpdateError()
+                {
+                    Title = "Error",
+                    Message = ex.Message
+                });
+            }
+
+            return errors;
         }
     }
 }

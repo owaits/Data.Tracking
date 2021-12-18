@@ -13,7 +13,7 @@ namespace Oarw.Data.Tracking.Blazor
 
         Task CancelUpdate();
 
-        Task ConfirmUpdate();
+        Task<IEnumerable<TrackedUpdateError>> ConfirmUpdate();
 
         Task ConfirmPrint();
     }

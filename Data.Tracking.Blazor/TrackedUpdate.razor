@@ -10,7 +10,7 @@
 
 @if (HasChanges() || IsPrintRequired())
 {
-<div class="fixed-bottom p-1 text-white @(string.IsNullOrEmpty(errorMessage) ? "bg-dark" : "bg-danger")">
+<div class="tracking-save-banner fixed-bottom p-1 text-white @(string.IsNullOrEmpty(errorMessage) ? "bg-dark" : "bg-danger")">
     @if (!string.IsNullOrEmpty(errorMessage))
     {
         @(errorMessage)
@@ -19,9 +19,6 @@
     {
         @($"Auto update in {Math.Max(0,((DateTime) NextAutoSave).Subtract(DateTime.Now).TotalSeconds).ToString("0")}s")
     }
-
-
-
 
     <button class="float-right btn btn-primary @((HasChanges())? "":"disabled")" @onclick="@(()=>ConfirmUpdate())"><i class="fas fa-circle-check" aria-hidden="true"></i>  Update</button>
     <button class="float-right mr-1 btn btn-secondary @((HasChanges() || IsPrintRequired())? "":"disabled")" @onclick="@(()=>CancelUpdate())"><i class="fas fa-times-circle" aria-hidden="true"></i> Cancel</button>
@@ -58,8 +55,20 @@
     <div class="p-5" />
 }
 
-
-
-@code {
-    
+@if(Errors?.Any() == true)
+{
+    <div class="toast-container position-absolute top-0 end-0 p-3">
+        @foreach(var error in Errors)
+        {
+            <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+              <div class="toast-header">
+                <strong class="me-auto">@error.Title</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close" @onclick="()=> ClearError(error)"></button>
+              </div>
+              <div class="toast-body">
+                @error.Message
+              </div>
+            </div>
+        }    
+    </div>
 }
