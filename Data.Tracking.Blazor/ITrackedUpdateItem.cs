@@ -15,6 +15,6 @@ namespace Oarw.Data.Tracking.Blazor
 
         Task<IEnumerable<TrackedUpdateError>> ConfirmUpdate();
 
-        Task ConfirmPrint();
+        Task<IEnumerable<TrackedUpdateError>> ConfirmPrint();
     }
 }
