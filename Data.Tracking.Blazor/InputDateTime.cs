@@ -82,9 +82,10 @@ namespace Oarw.Data.Tracking.Blazor
             }
         }
 
+
         static bool TryParseDateTime(string value, bool localize, out TValue result)
         {
-            var success = BindConverter.TryConvertToDateTime(value, CultureInfo.InvariantCulture, DateFormat, out var parsedValue);
+            var success = BindConverter.TryConvertToDateTime(value, CultureInfo.InvariantCulture, out var parsedValue);
             if (success)
             {
                 if(localize)
@@ -102,7 +103,7 @@ namespace Oarw.Data.Tracking.Blazor
 
         static bool TryParseDateTimeOffset(string value, bool localize, out TValue result)
         {
-            var success = BindConverter.TryConvertToDateTimeOffset(value, CultureInfo.InvariantCulture, DateFormat, out var parsedValue);
+            var success = BindConverter.TryConvertToDateTimeOffset(value, CultureInfo.InvariantCulture, out var parsedValue);
             if (success)
             {
                 if (localize)

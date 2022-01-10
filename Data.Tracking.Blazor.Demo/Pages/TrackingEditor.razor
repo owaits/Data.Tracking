@@ -1,0 +1,35 @@
+﻿@page "/tracked"
+@using Oarw.Data.Tracking
+@using Oarw.Data.Tracking.Blazor
+
+<h1>Tracked Editor</h1>
+
+@if(TestData != null)
+{
+    <TrackedEditor TItem="DemoData"  url="" Context="editData">
+        <EditModal>
+            <InputDateTime @bind-Value="@editData.StartDate" />
+        </EditModal>
+        <ChildContent>
+            <TrackedEditButton Create="@(()=> TestData)" />
+        </ChildContent>
+    </TrackedEditor>
+}
+
+
+@code {
+
+    public DemoData TestData { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        TestData = new DemoData();        
+        TestData.StartTracking();
+        TestData.WhenChanged(() => StateHasChanged());
+
+        StateHasChanged();
+
+        await Task.CompletedTask;
+    }
+
+}

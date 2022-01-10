@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30709.64
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32104.313
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Oarw.Data.Tracking", "Data.Tracking\Oarw.Data.Tracking.csproj", "{533F7C3B-ECD4-4613-8E07-94247AB26485}"
 EndProject
@@ -18,7 +18,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{7EFB9D05-D7E3-4C54-885F-71093D46F2CC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data.Tracking.Blazor.Demo", "Data.Tracking.Blazor.Demo\Data.Tracking.Blazor.Demo.csproj", "{A928E0E9-37AB-4748-B83D-2E5BBD559759}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Data.Tracking.Blazor.Demo", "Data.Tracking.Blazor.Demo\Data.Tracking.Blazor.Demo.csproj", "{A928E0E9-37AB-4748-B83D-2E5BBD559759}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
