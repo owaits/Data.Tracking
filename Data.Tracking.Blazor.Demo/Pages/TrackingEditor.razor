@@ -11,7 +11,12 @@
             <InputDateTime @bind-Value="@editData.StartDate" />
         </EditModal>
         <ChildContent>
+            <input type="text" @bind-value="@TestData.Name"/>
             <TrackedEditButton Create="@(()=> TestData)" />
+
+                <TrackedUpdate>
+                    <TrackedUpdateItem url="" editItems="EditItems" TItem="DemoData" />
+                </TrackedUpdate>
         </ChildContent>
     </TrackedEditor>
 }
@@ -21,11 +26,15 @@
 
     public DemoData TestData { get; set; }
 
+    public List<DemoData> EditItems { get; set; } = new List<DemoData>();
+
     protected override async Task OnInitializedAsync()
     {
-        TestData = new DemoData();        
-        TestData.StartTracking();
-        TestData.WhenChanged(() => StateHasChanged());
+        TestData = new DemoData();
+        EditItems.Add(TestData);
+
+        EditItems.StartTracking();
+        EditItems.WhenChanged(() => StateHasChanged());
 
         StateHasChanged();
 

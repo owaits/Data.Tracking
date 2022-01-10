@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,9 +16,12 @@ namespace Oarw.Data.Tracking.Blazor
         [Parameter]
         public TimeSpan? AutoSaveInterval { get; set; }
 
-        public DateTime? NextAutoSave { get; set; }
+        [Inject]
+        public IServiceProvider Services { get; set; }
 
-        private string errorMessage { get; set; }
+        public ITrackedPrintService Print { get; set; }
+
+        public DateTime? NextAutoSave { get; set; }
 
         private string selectedPrintProfile { get; set; }
 
@@ -37,6 +41,8 @@ namespace Oarw.Data.Tracking.Blazor
 
         protected override void OnInitialized()
         {
+            Print = Services.GetService<ITrackedPrintService>();
+            
             base.OnInitialized();
 
             if (AutoSaveInterval != null)
@@ -105,7 +111,7 @@ namespace Oarw.Data.Tracking.Blazor
             }
         }
 
-        protected async Task Print()
+        protected async Task StartPrint()
         {
             foreach (var item in Updates)
                 await item.ConfirmPrint();
@@ -120,6 +126,12 @@ namespace Oarw.Data.Tracking.Blazor
         private void ClearError(TrackedUpdateError error)
         {
             Errors = Errors.Where(item => item != error);
+            StateHasChanged();
+        }
+
+        private void ClearAllErrors()
+        {
+            Errors = null;
             StateHasChanged();
         }
 

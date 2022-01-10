@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,6 +7,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Oarw.Data.Tracking.Blazor
 {
@@ -18,6 +20,8 @@ namespace Oarw.Data.Tracking.Blazor
         public NavigationManager Url { get; set; }
 
         [Inject]
+        public IServiceProvider Services { get; set; }
+
         public ITrackedPrintService print { get; set;  }
 
         [CascadingParameter]
@@ -45,6 +49,8 @@ namespace Oarw.Data.Tracking.Blazor
 
         protected override void OnInitialized()
         {
+            print = Services.GetService<ITrackedPrintService>();
+
             if (UpdateContainer != null)
                 UpdateContainer.Updates.Add(this);
         }

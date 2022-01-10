@@ -2,41 +2,49 @@
 @using System.Text.Json
 @inject HttpClient Http
 @inject NavigationManager Url;
-@inject ITrackedPrintService print;
 
 <CascadingValue Value=this>
     @ChildContent
 </CascadingValue>
 
-@if (HasChanges() || IsPrintRequired())
+@if (HasChanges() || IsPrintRequired() || Errors?.Any() == true)
 {
-<div class="tracking-save-banner fixed-bottom p-1 text-white @(string.IsNullOrEmpty(errorMessage) ? "bg-dark" : "bg-danger")">
-    @if (!string.IsNullOrEmpty(errorMessage))
+    <div class="tracking-save-banner fixed-bottom p-1 text-white @(Errors?.Any() == true ? "bg-danger" : "bg-dark")">
+    @if (Errors?.Any() == true)
     {
-        @(errorMessage)
+        @foreach(var error in Errors)
+        {
+            <strong class="me-auto">@error.Title</strong>
+        } 
     }
     else if (NextAutoSave != null)
     {
         @($"Auto update in {Math.Max(0,((DateTime) NextAutoSave).Subtract(DateTime.Now).TotalSeconds).ToString("0")}s")
     }
 
+
     <button class="float-right btn btn-primary @((HasChanges())? "":"disabled")" @onclick="@(()=>ConfirmUpdate())"><i class="fas fa-circle-check" aria-hidden="true"></i>  Update</button>
     <button class="float-right mr-1 btn btn-secondary @((HasChanges() || IsPrintRequired())? "":"disabled")" @onclick="@(()=>CancelUpdate())"><i class="fas fa-times-circle" aria-hidden="true"></i> Cancel</button>
+    
+    @if(Errors?.Any() == true)
+    {
+        <button class="float-right btn btn-light mr-1" @onclick="@(()=>ClearAllErrors())"><i class="fas fa-circle-check" aria-hidden="true"></i>  OK</button>
+    }
 
     @if (IsPrintRequired())
     {
 
-        <a role="button" class="float-right btn btn-info mr-2" @onclick="@(() => Print())"><i class="oi oi-print" aria-hidden="true"></i> Print</a>
+        <a role="button" class="float-right btn btn-info mr-2" @onclick="@(() => StartPrint())"><i class="oi oi-print" aria-hidden="true"></i> Print</a>
 
-        <select class="form-control float-right mr-2" style="width: 200px" @bind="print.SelectedProfileId">
-            @if (string.IsNullOrEmpty(print.SelectedProfileId))
+        <select class="form-control float-right mr-2" style="width: 200px" @bind="Print.SelectedProfileId">
+            @if (string.IsNullOrEmpty(Print.SelectedProfileId))
             {
                 <option value="" disabled selected>--Select Print Profile --</option>
             }
 
-            @foreach (var profile in print.Profiles)
+            @foreach (var profile in Print.Profiles)
             {
-                if (profile.Id == print.SelectedProfileId)
+                if (profile.Id == Print.SelectedProfileId)
                 {
                     <option selected>@profile.Name</option>
                 }
@@ -53,22 +61,4 @@
 
     <!--Spacer to allow for floating confirmation bars at the bottom -->
     <div class="p-5" />
-}
-
-@if(Errors?.Any() == true)
-{
-    <div class="toast-container position-absolute top-0 end-0 p-3">
-        @foreach(var error in Errors)
-        {
-            <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-              <div class="toast-header">
-                <strong class="me-auto">@error.Title</strong>
-                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close" @onclick="()=> ClearError(error)"></button>
-              </div>
-              <div class="toast-body">
-                @error.Message
-              </div>
-            </div>
-        }    
-    </div>
 }
