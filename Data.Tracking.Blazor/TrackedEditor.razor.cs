@@ -98,7 +98,10 @@ namespace Oarw.Data.Tracking.Blazor
             {
                 if (isCreate)
                 {
-                    await Http.PostAsJsonAsync(url, itemToSave);
+                    var response = await Http.PostAsJsonAsync(url, itemToSave);
+
+                    if (!response.IsSuccessStatusCode)
+                        return false;
                 }
                 else
                 {
