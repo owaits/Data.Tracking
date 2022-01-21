@@ -14,6 +14,6 @@ namespace Oarw.Data.Tracking.Blazor
 
         void StartEdit(ITrackableObject editItem);
 
-        Task SaveEdit();
+        Task<bool> SaveEdit();
     }
 }

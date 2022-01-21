@@ -85,7 +85,7 @@ namespace Oarw.Data.Tracking.Blazor
                 OnCancelEdit(Create, trackedEditItem);
         }
 
-        public async Task SaveEdit()
+        public async Task<bool> SaveEdit()
         {
             TItem itemToSave = EditItem;
             bool isCreate = Create;
@@ -105,7 +105,11 @@ namespace Oarw.Data.Tracking.Blazor
                     if (itemToSave.IsModified(true))
                     {
                         //Put the changes to the edit item on the server.
-                        await Http.PutAsJsonAsync(url, new[] { itemToSave });
+                        var response = await Http.PutAsJsonAsync(url, new[] { itemToSave });
+
+                        if (!response.IsSuccessStatusCode)
+                            return false;
+
 
                         //Delete any child items that require deletion.
                         if (itemToSave.IsDeleted(out IEnumerable<ITrackableObject> subDeleteItems))
@@ -126,6 +130,8 @@ namespace Oarw.Data.Tracking.Blazor
 
             if (OnFinishEdit != null)
                 OnFinishEdit(isCreate, itemToSave);
+
+            return true;
         }
     }
 
