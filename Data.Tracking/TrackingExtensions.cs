@@ -297,7 +297,8 @@ namespace Oarw.Data.Tracking
             if(parent != null)
             {
                 var parentTracker = GetTracker(parent);
-                tracker.OnChanged = parentTracker.OnChanged;
+                foreach(var subscriber in parentTracker.OnChanged)
+                    tracker.OnChanged.Add(subscriber);
             }
             tracker.Added = true;
         }
@@ -359,7 +360,7 @@ namespace Oarw.Data.Tracking
         internal static void WhenChanged(ITrackableObject item, Action onChangedDelegate, TrackingCache cache)
         {
             TrackingState tracker = GetTracker(item);
-            tracker.OnChanged = onChangedDelegate;
+            tracker.OnChanged.Add(onChangedDelegate);
 
             PropertyInfo[] properties;
             if (!cache.Properties.TryGetValue(item.GetType(), out properties))

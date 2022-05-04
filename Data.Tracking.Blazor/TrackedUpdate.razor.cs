@@ -135,6 +135,11 @@ namespace Oarw.Data.Tracking.Blazor
             StateHasChanged();
         }
 
+        public void Refresh()
+        {
+            StateHasChanged();
+        }
+
         public async ValueTask DisposeAsync()
         {
             //If auto save is enabled and the user navigates away update the changes.

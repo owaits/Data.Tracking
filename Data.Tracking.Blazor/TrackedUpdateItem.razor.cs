@@ -7,12 +7,13 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Oarw.Data.Tracking.Blazor
 {
     public partial class TrackedUpdateItem<TItem>
     {
+        private Action changeHandler = null;
+
         [Inject]
         public HttpClient Http { get; set; }
 
@@ -27,8 +28,21 @@ namespace Oarw.Data.Tracking.Blazor
         [CascadingParameter]
         public TrackedUpdate UpdateContainer { get; set; }
 
+        private IEnumerable<ITrackableObject> editItems = null;
+
         [Parameter]
-        public IEnumerable<ITrackableObject> editItems { get; set; }
+        public IEnumerable<ITrackableObject> EditItems 
+        { 
+            get { return editItems; }
+            set
+            {
+                if(editItems != value)
+                {
+                    editItems = value;
+                    editItems.WhenChanged(changeHandler);
+                }
+            }
+        }
 
         [Parameter]
         public ITrackableObject editItem
@@ -49,6 +63,8 @@ namespace Oarw.Data.Tracking.Blazor
 
         protected override void OnInitialized()
         {
+            changeHandler = new Action(() => UpdateContainer.Refresh());
+
             print = Services.GetService<ITrackedPrintService>();
 
             if (UpdateContainer != null)

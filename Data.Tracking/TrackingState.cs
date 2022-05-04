@@ -47,8 +47,8 @@ namespace Oarw.Data.Tracking
                 var unmodifiedValue = UnmodifiedState.Where(item => item.Key.Name == e.PropertyName);
                 if (unmodifiedValue != null)
                 {
-                    if (OnChanged != null)
-                        OnChanged();
+                    foreach (var subscriber in OnChanged)
+                        subscriber();
                 }
             }
         }
@@ -69,8 +69,8 @@ namespace Oarw.Data.Tracking
                 if(deleted != value)
                 {
                     deleted = value;
-                    if (OnChanged != null)
-                        OnChanged();
+                    foreach (var subscriber in OnChanged)
+                        subscriber();
                 }
             }
         }
@@ -91,8 +91,8 @@ namespace Oarw.Data.Tracking
                 if (added != value)
                 {
                     added = value;
-                    if (OnChanged != null)
-                        OnChanged();
+                    foreach (var subscriber in OnChanged)
+                        subscriber();
                 }
             }
         }
@@ -113,8 +113,8 @@ namespace Oarw.Data.Tracking
                 if (print != value)
                 {
                     print = value;
-                    if (OnChanged != null)
-                        OnChanged();
+                    foreach (var subscriber in OnChanged)
+                        subscriber();
                 }
             }
         }
@@ -126,7 +126,7 @@ namespace Oarw.Data.Tracking
         /// <summary>
         /// Gets or sets a delegate to call when the object being tracked changes.
         /// </summary>
-        public Action OnChanged {get;set;}
+        public HashSet<Action> OnChanged {get;set;} = new HashSet<Action>();
 
         public void Dispose()
         {
