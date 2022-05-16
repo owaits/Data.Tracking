@@ -359,6 +359,9 @@ namespace Oarw.Data.Tracking
 
         internal static void WhenChanged(ITrackableObject item, Action onChangedDelegate, TrackingCache cache)
         {
+            if (onChangedDelegate == null)
+                throw new ArgumentNullException(nameof(onChangedDelegate));
+
             TrackingState tracker = GetTracker(item);
             tracker.OnChanged.Add(onChangedDelegate);
 

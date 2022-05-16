@@ -39,7 +39,9 @@ namespace Oarw.Data.Tracking.Blazor
                 if(editItems != value)
                 {
                     editItems = value;
-                    editItems.WhenChanged(changeHandler);
+
+                    if(changeHandler != null)
+                        editItems.WhenChanged(changeHandler);
                 }
             }
         }
@@ -64,6 +66,9 @@ namespace Oarw.Data.Tracking.Blazor
         protected override void OnInitialized()
         {
             changeHandler = new Action(() => UpdateContainer.Refresh());
+
+            if (editItems != null)
+                editItems.WhenChanged(changeHandler);
 
             print = Services.GetService<ITrackedPrintService>();
 
