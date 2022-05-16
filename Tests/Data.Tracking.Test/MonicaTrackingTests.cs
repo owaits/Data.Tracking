@@ -136,5 +136,33 @@ namespace Monica.Data.Test
             Assert.IsTrue(context.IsPrintRequired());
             Assert.AreEqual(1, changesDetected);
         }
+
+        [TestMethod]
+        public void WhenChangedTest()
+        {
+            bool hasChanged1 = false;
+            bool hasChanged2 = false;
+            bool hasChanged3 = false;
+
+
+            TrackableObject context2 = new TrackableObject();
+            context2.Children.Add(new TrackableSubObject() { Name = "Sub 2"});
+            context2.Children.Add(new TrackableSubObject() { Name = "Sub 3" });
+
+            context2.StartTracking();
+            context2.WhenChanged(() => { hasChanged1 = true; });
+            context2.WhenChanged(() => { hasChanged2 = true; });
+
+
+            context2.Children.WhenChanged(() => { hasChanged3 = true; });
+
+            var subItem3 = new TrackableSubObject() { Name = "Sub 3" };
+            context2.Children.Add(subItem3);
+            subItem3.New(context2);
+
+            Assert.IsTrue(hasChanged1);
+            Assert.IsTrue(hasChanged2);
+            Assert.IsTrue(hasChanged3);
+        }
     }
 }
