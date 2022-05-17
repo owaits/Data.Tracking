@@ -19,5 +19,18 @@ namespace Oarw.Data.Tracking.Helpers
             map.Add(source, newId);
             return newId;
         }
+
+        public Guid? MapId(Guid? source)
+        {
+            if (source == null)
+                return null;
+
+            if (map.TryGetValue((Guid) source, out Guid destination))
+                return destination;
+
+            Guid newId = Guid.NewGuid();
+            map.Add((Guid) source, newId);
+            return newId;
+        }
     }
 }

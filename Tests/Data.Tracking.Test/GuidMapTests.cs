@@ -19,5 +19,14 @@ namespace Monica.Data.Test
             Assert.AreEqual(map.MapId(testId), map.MapId(testId));
             Assert.AreNotEqual(map.MapId(testId), map.MapId(Guid.NewGuid()));
         }
+
+        [TestMethod]
+        public void PreserveNullIDsTest()
+        {
+            Guid testId = Guid.NewGuid();
+
+            GuidMap map = new GuidMap();
+            Assert.AreEqual(null, map.MapId(null));
+        }
     }
 }
