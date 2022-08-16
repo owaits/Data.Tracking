@@ -32,6 +32,22 @@ namespace Monica.Data.Test
             context.TextValue = "test";
             Assert.IsTrue(context.HasChanges());
         }
+        
+        /// <summary>
+        /// Checks that a user can manually modify an entity.
+        /// </summary>
+        [TestMethod]
+        public void ManuallyModifiedTest()
+        {
+            TrackableObject context = new TrackableObject();
+
+            context.StartTracking();
+            Assert.IsFalse(context.HasChanges());
+
+            context.Modified();
+            Assert.IsTrue(context.IsModified());
+            Assert.IsTrue(context.HasChanges());
+        }
 
         [TestMethod]
         public void MergeTrackingEntityTest()

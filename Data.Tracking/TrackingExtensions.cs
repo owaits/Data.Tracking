@@ -291,6 +291,16 @@ namespace Oarw.Data.Tracking
             tracker.Deleted = true;
         }
 
+        /// <summary>
+        /// Flags this entity as having been modified even when no changes have been detected.
+        /// </summary>
+        /// <param name="source">The trackable object to mark as modified.</param>
+        public static void Modified(this ITrackableObject source)
+        {
+            TrackingState tracker = GetTracker(source);
+            tracker.Modified = true;
+        }
+
         public static void New(this ITrackableObject source, ITrackableObject parent = null)
         {
             var tracker = source.StartTracking();           
@@ -478,6 +488,10 @@ namespace Oarw.Data.Tracking
 
         private static bool IsModified(ITrackableObject source, TrackingState tracker, bool includeAddDelete = false)
         {
+            //If the item has been flagged as modified return true even if no changes can be detected.
+            if (tracker.Modified)
+                return true;
+
             if (tracker.Added || tracker.Deleted)
                 return includeAddDelete;
 
