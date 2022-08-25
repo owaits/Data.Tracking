@@ -329,6 +329,7 @@ namespace Oarw.Data.Tracking
             TrackingState tracker = GetTracker(source);
             tracker.Deleted = false;
             tracker.Added = false;
+            tracker.Modified = false;
             tracker.Print = false;
             foreach (var property in tracker.UnmodifiedState)
             {
