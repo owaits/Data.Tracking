@@ -18,9 +18,6 @@ namespace Oarw.Data.Tracking.Blazor
         public HttpClient Http { get; set; }
 
         [Inject]
-        public NavigationManager Url { get; set; }
-
-        [Inject]
         public IServiceProvider Services { get; set; }
 
         public ITrackedPrintService print { get; set;  }
@@ -47,14 +44,17 @@ namespace Oarw.Data.Tracking.Blazor
         }
 
         [Parameter]
-        public ITrackableObject editItem
+        public ITrackableObject EditItem
         {
             get { return editItems?.FirstOrDefault(); }
             set { editItems = value == null ? null : new ITrackableObject[] { value }; }
         }
 
         [Parameter]
-        public string url { get; set; }
+        public string Url { get; set; }
+
+        [Parameter]
+        public Action BeforeUpdate { get; set; }
 
         [Parameter]
         public Action afterUpdate { get; set; }
@@ -97,10 +97,15 @@ namespace Oarw.Data.Tracking.Blazor
             List<TrackedUpdateError> errors = new List<TrackedUpdateError>();
             try
             {
+                if (BeforeUpdate != null)
+                {
+                    BeforeUpdate();
+                }
+
                 IEnumerable<ITrackableObject> additions = editItems.Where(item => item.IsNew()).ToList();
                 if (additions.Any())
                 {
-                    var response = await Http.PostAsJsonAsync(url, additions.Cast<TItem>());
+                    var response = await Http.PostAsJsonAsync(Url, additions.Cast<TItem>());
 
                     if(!response.IsSuccessStatusCode)
                     {
@@ -118,7 +123,7 @@ namespace Oarw.Data.Tracking.Blazor
 
                 if (updates.Any())
                 {
-                    var response = await Http.PutAsJsonAsync(url, updates.Cast<TItem>());
+                    var response = await Http.PutAsJsonAsync(Url, updates.Cast<TItem>());
                     if (!response.IsSuccessStatusCode)
                     {
                         errors.Add(new TrackedUpdateError()
@@ -140,7 +145,7 @@ namespace Oarw.Data.Tracking.Blazor
                         {
                             foreach (var item in subDeleteItems)
                             {
-                                var response = await Http.DeleteAsync(url + $"/{item.Id}");
+                                var response = await Http.DeleteAsync(Url + $"/{item.Id}");
                                 if (!response.IsSuccessStatusCode)
                                 {
                                     errors.Add(new TrackedUpdateError()
