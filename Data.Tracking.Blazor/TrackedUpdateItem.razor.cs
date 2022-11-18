@@ -50,7 +50,7 @@ namespace Oarw.Data.Tracking.Blazor
             set { editItems = value == null ? null : new ITrackableObject[] { value }; }
         }
 
-        [Parameter]
+        [Parameter,EditorRequired]
         public string Url { get; set; }
 
         [Parameter]
@@ -88,7 +88,8 @@ namespace Oarw.Data.Tracking.Blazor
 
         public async Task CancelUpdate()
         {
-            editItems.Undo();
+            if(editItems!= null) editItems.Undo();
+            if (editItem != null) editItem.Undo();
             await Task.CompletedTask;
         }
 

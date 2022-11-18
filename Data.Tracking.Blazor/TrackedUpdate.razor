@@ -44,7 +44,7 @@
 
             @foreach (var profile in Print.Profiles)
             {
-                if (profile.Id == Print.SelectedProfileId)
+                if (!string.IsNullOrEmpty(Print.SelectedProfileId) && profile.Id == Print.SelectedProfileId)
                 {
                     <option selected>@profile.Name</option>
                 }

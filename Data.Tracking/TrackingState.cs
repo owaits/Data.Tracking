@@ -97,6 +97,29 @@ namespace Oarw.Data.Tracking
             }
         }
 
+        private bool modified = false;
+
+        /// <summary>
+        /// Gets or sets whether the object being tracked has been modified. This is used along with change tracking to determine if the item has been modified.
+        /// The user can use this flag to force the entity to be modified even if no changes are detected.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if added; otherwise, <c>false</c>.
+        /// </value>
+        public bool Modified
+        {
+            get { return modified; }
+            set
+            {
+                if (modified != value)
+                {
+                    modified = value;
+                    foreach (var subscriber in OnChanged)
+                        subscriber();
+                }
+            }
+        }
+
         private bool print = false;
 
         /// <summary>
