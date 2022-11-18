@@ -89,7 +89,7 @@ namespace Oarw.Data.Tracking.Blazor
         public async Task CancelUpdate()
         {
             if(editItems!= null) editItems.Undo();
-            if (editItem != null) editItem.Undo();
+            if (EditItem != null) EditItem.Undo();
             await Task.CompletedTask;
         }
 
