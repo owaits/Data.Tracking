@@ -150,6 +150,13 @@ namespace Oarw.Data.Tracking.Blazor.Extensions
             }
         }
 
+        public static string FormatTime(this DateTime? value, string format = null)
+        {
+            if (value == null)
+                return "-";
+            return ((DateTime)value).FormatTime(format);
+        }
+
         public static string FormatTime(this DateTime value, string format = null)
         {
             try
