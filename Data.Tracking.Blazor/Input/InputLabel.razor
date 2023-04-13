@@ -1,0 +1,53 @@
+﻿
+@if (Inline)
+{
+    <div class="row mb-2">
+        <label class="col-sm-4">@(Label):</label>
+        <div class="col-sm-8">
+            @ChildContent
+        </div>
+    </div>
+}
+else if (Checkbox)
+{
+    <div class="form-check">
+        @ChildContent
+        <label class="form-check-label">@Label</label>
+        @if (!string.IsNullOrEmpty(Help))
+        {
+            <div>
+                <small class="form-text text-muted">@Help</small>
+            </div>
+        }
+    </div>
+    }
+else
+{
+<div class="form-group">
+    <label class="">@(Label):</label>
+    @ChildContent
+    @if (!string.IsNullOrEmpty(Help))
+    {
+        <small class="form-text text-muted">@Help</small>
+    }
+</div>
+}
+
+
+@code {
+
+    [Parameter]
+    public bool Inline { get; set; } = false;
+
+        [Parameter]
+    public bool Checkbox { get; set; } = false;
+
+    [Parameter]
+    public string Label { get; set; }
+
+    [Parameter]
+    public string Help { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+}

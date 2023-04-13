@@ -1,0 +1,39 @@
+﻿@using Oarw.Data.Tracking.Blazor.Extensions;
+@inherits InputBase<TimeSpan?>
+
+<div style="min-width:6em" class="input-group form-inline @(Small ? "input-group-sm":"")">
+
+    <InputNumber type="number" class="form-control" size="3" @bind-Value="Offset" min="0" max="100" placeholder="@Placeholder"/>
+    <div class="input-group-append">
+        <button id="resolutionDropdown" type="button" class="input-group-text dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            @(Resolution.FormatName())
+        </button>
+        <div class="dropdown-menu p-1" aria-labelledby="vatRateDropdown">
+            <a class="dropdown-item" @onclick="(()=> Resolution = TimeResolution.Hour)">Hour(s)</a>
+            <a class="dropdown-item" @onclick="(()=> Resolution = TimeResolution.Day)">Day(s)</a>
+            <a class="dropdown-item" @onclick="(()=> Resolution = TimeResolution.Week)">Week(s)</a>
+            <a class="dropdown-item" @onclick="(()=> Resolution = TimeResolution.Year)">Year(s)</a>
+        </div>
+    </div>
+    @if(ShowOrder)
+    {
+        <div class="input-group-append">
+            <button id="afterBeforeDropdown" type="button" class="input-group-text dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                @(Before ? "Before" : "After")
+            </button>
+            <div class="dropdown-menu p-1" aria-labelledby="vatRateDropdown">
+                <a class="dropdown-item" @onclick="(()=> Before = false)">After</a>
+                <a class="dropdown-item" @onclick="(()=> Before = true)">Before</a>
+            </div>
+        </div>
+    }
+
+    @if(Append != null)
+    {
+        <div class="input-group-append">
+            @Append
+        </div>
+    }
+</div>
+
+
