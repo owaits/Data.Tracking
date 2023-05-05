@@ -6,7 +6,7 @@
 @inject HttpClient Http
 @inject IJSRuntime JsRuntime;
 
-<div class="modal fade" id="trackedEditor_@EditorId" role="dialog">
+<div class="modal fade" style="@(ZIndex > 0 ? $"z-index: {ZIndex}" : "")" id="trackedEditor_@EditorId" role="dialog">
     <div class="modal-dialog @(ModalCSS)">
         <div class="modal-content">
             @if (EditItem != null)

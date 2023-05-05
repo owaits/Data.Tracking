@@ -27,6 +27,9 @@ namespace Oarw.Data.Tracking.Blazor
         public string ModalCSS { get; set; }
 
         [Parameter]
+        public int ZIndex { get; set; }
+
+        [Parameter]
         public RenderFragment<TItem> EditModal { get; set; }
 
         [Parameter]
