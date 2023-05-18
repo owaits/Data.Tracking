@@ -8,6 +8,7 @@
 {
     <TrackedEditor TItem="DemoData"  url="" Context="editData">
         <EditModal>
+            <input type="text" @bind-value="@editData.Name" />
             <InputDateTime @bind-Value="@editData.StartDate" />
         </EditModal>
         <ChildContent>

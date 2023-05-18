@@ -1,5 +1,6 @@
 ﻿using Oarw.Data.Tracking;
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Data.Tracking.Blazor.Demo
 {
@@ -7,7 +8,8 @@ namespace Data.Tracking.Blazor.Demo
     {
         public Guid Id { get; set; } = Guid.NewGuid();
 
-        public string Name { get; set; }
+        [Required]
+        public string? Name { get; set; }
 
         public DateTime StartDate { get; set; } = DateTime.UtcNow;        
     }

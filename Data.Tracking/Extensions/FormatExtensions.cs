@@ -113,19 +113,6 @@ namespace Oarw.Data.Tracking.Blazor.Extensions
             }
         }
 
-        public static string FormatAssetType(this int? value)
-        {
-            try
-            {
-                string[] typeNames = new string[] { "Fixed Asset(FA)", "Cost of Goods Sold(COGS)", "Stock", "Admin","Transport","Buildings", "IT","Marketing","Entertainment","Payroll"};
-                return (value != null && value > 0 ? typeNames[(int)value - 1] : "-");
-            }
-            catch (Exception ex)
-            {
-                return $"[error: {ex.Message}]";
-            }
-        }
-
         /// <summary>
         /// Formats the date for display in UI. Null datyes will be formated with dash.
         /// </summary>
@@ -204,20 +191,6 @@ namespace Oarw.Data.Tracking.Blazor.Extensions
 
         }
 
-        /// <summary>
-        /// Formats the length of the cable in mm and displays it in m to 2 decimal places.
-        /// </summary>
-        /// <param name="length">The length of the cable in mm.</param>
-        /// <returns>The formated length to display on labels.</returns>
-        public static string FormatCableLength(this decimal? length)
-        {
-            if (length == null)
-                return "-";
-
-            decimal meters = (decimal)length / 1000;
-
-            return $"{meters.ToString("#.##")}m";
-        }
 
         public static int GetOrder<T>(this T enumValue)
 where T : struct, IConvertible
