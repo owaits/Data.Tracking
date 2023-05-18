@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace Oarw.Data.Tracking.Blazor.Extensions
+namespace Oarw.Data.Tracking.Extensions
 {
     public static class FormatExtensions
     {
@@ -160,7 +160,7 @@ namespace Oarw.Data.Tracking.Blazor.Extensions
         {
             if (value == null)
                 return "-";
-            return ((TimeSpan)value).ToString();
+            return ((TimeSpan)value).FormatTimeSpan();
         }
 
         public static string FormatTimeSpan(this TimeSpan value)
