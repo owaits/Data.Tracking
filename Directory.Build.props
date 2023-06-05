@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <BuildVersion Condition="'$(BuildVersion)' == ''">1.0.22</BuildVersion>
+    <BuildVersion Condition="'$(BuildVersion)' == ''">1.0.23</BuildVersion>
     <Version>$(BuildVersion)</Version>
     <Authors>Oliver Waits</Authors>
     <Company>OW Productions Ltd.</Company>
