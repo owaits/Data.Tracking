@@ -274,7 +274,10 @@ namespace Oarw.Data.Tracking
 
         public static bool IsTracking(this ITrackableObject source)
         {
-            return trackedObjects.ContainsKey(source);
+            if (source == null)
+                return false;
+
+            return trackedObjects?.ContainsKey(source) ?? false;
         }
 
         private static TrackingState GetTracker(ITrackableObject source)
@@ -354,6 +357,9 @@ namespace Oarw.Data.Tracking
         /// <param name="onChangedDelegate">The on changed delegate.</param>
         public static void WhenChanged(this IEnumerable<ITrackableObject> source, Action onChangedDelegate)
         {
+            if (source == null)
+                return;
+
             TrackingCache cache = new TrackingCache();
             foreach (ITrackableObject item in source)
             {
@@ -363,9 +369,11 @@ namespace Oarw.Data.Tracking
 
         public static void WhenChanged(this ITrackableObject item, Action onChangedDelegate)
         {
+            if (item == null)
+                return;
+
             TrackingCache cache = new TrackingCache();
             WhenChanged(item, onChangedDelegate, cache);
-
         }
 
         internal static void WhenChanged(ITrackableObject item, Action onChangedDelegate, TrackingCache cache)
@@ -407,14 +415,21 @@ namespace Oarw.Data.Tracking
 
         public static bool IsDeleted(this ITrackableObject source)
         {
+            if (source == null)
+                return false;
+
             TrackingState tracker = GetTracker(source);
             return IsDeleted(source, tracker, null);
         }
 
         public static bool IsDeleted(this ITrackableObject source, out IEnumerable<ITrackableObject> deletedItems)
         {
-            TrackingState tracker = GetTracker(source);
             deletedItems = new List<ITrackableObject>();
+            if (source == null)
+                return false;
+
+            TrackingState tracker = GetTracker(source);
+            
             return IsDeleted(source, tracker, (List<ITrackableObject>) deletedItems);
         }
 
@@ -453,6 +468,9 @@ namespace Oarw.Data.Tracking
 
         public static bool IsNew(this ITrackableObject source)
         {
+            if (source == null)
+                return false;
+
             TrackingState tracker = GetTracker(source);
             return IsNew(source, tracker);
         }
@@ -483,6 +501,9 @@ namespace Oarw.Data.Tracking
 
         public static bool IsModified(this ITrackableObject source, bool includeAddDelete = false)
         {
+            if(source == null) 
+                return false;
+
             TrackingState tracker = GetTracker(source);
             return IsModified(source, tracker, includeAddDelete);
         }
@@ -532,6 +553,9 @@ namespace Oarw.Data.Tracking
 
         private static bool IsPropertyModified(ITrackableObject source, PropertyInfo property, object referenceValue)
         {
+            if (source == null)
+                return false;
+
             if (referenceValue == null)
             {
                 if (property.GetValue(source) != null)
@@ -549,6 +573,9 @@ namespace Oarw.Data.Tracking
 
         public static bool HasChanges(this ITrackableObject source)
         {
+            if (source == null)
+                return false;
+
             TrackingState tracker = GetTracker(source);
 
             if (IsNew(source, tracker))
@@ -591,6 +618,9 @@ namespace Oarw.Data.Tracking
         /// </returns>
         public static bool IsPrintRequired(this ITrackableObject source)
         {
+            if (source == null)
+                return false;
+
             TrackingState tracker = GetTracker(source);
             return tracker.Print;
         }
