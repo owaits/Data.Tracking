@@ -285,8 +285,6 @@ namespace Oarw.Data.Tracking
 
                 if (property.PropertyType != typeof(TrackingState) && ShouldAllowProperty(property))
                 {
-                    //targetTracker.UnmodifiedState.Add(property, property.GetValue(target));
-
                     if (property.PropertyType.IsGenericType && property.PropertyType.IsAssignableTo(typeof(System.Collections.IEnumerable)))
                     {
                         dynamic targetList = property.GetValue(target);
