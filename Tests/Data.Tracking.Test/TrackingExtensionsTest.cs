@@ -34,6 +34,7 @@ namespace Oarw.Data.Tracking.Test
         }
 
         [TestMethod]
+        [TestCategory("Tracking")]
         public void TrackingPerformanceTest()
         {
             List<TrackableObject> trackedItems = GenerateTestObjects(2000);
@@ -66,6 +67,7 @@ namespace Oarw.Data.Tracking.Test
         }
 
         [TestMethod]
+        [TestCategory("Tracking")]
         public void TrackingChanges()
         {
             var testEntity = GenerateTestObjects(1).First();
@@ -87,6 +89,7 @@ namespace Oarw.Data.Tracking.Test
         }
 
         [TestMethod]
+        [TestCategory("Tracking")]
         public void TrackingDelete()
         {
             var testEntity = GenerateTestObjects(1).First();
@@ -120,6 +123,7 @@ namespace Oarw.Data.Tracking.Test
         }
 
         [TestMethod]
+        [TestCategory("Tracking")]
         public void TrackingNew()
         {
             var testEntity = GenerateTestObjects(1).First();
@@ -154,6 +158,39 @@ namespace Oarw.Data.Tracking.Test
             Assert.IsTrue(testEntity.IsModified(true));
             Assert.IsFalse(testEntity.IsModified(false));
 
+        }
+
+        /// <summary>
+        /// This test ensures that when you copy changes to an already tracked object the updates are applied correctly.
+        /// </summary>
+        [TestMethod]
+        [TestCategory("Tracking")]
+        public void TrackingUpdateTest()
+        {
+            var testEntities = GenerateTestObjects(2);
+            var updateEntity = new TrackableObject()
+            {
+                Id = testEntities[0].Id,
+                Name = $"Updated"
+            };
+
+            //Parent Item Delete
+            testEntities.StartTracking();
+
+            Assert.IsFalse(testEntities[0].IsModified());
+
+            testEntities[0].UpdateTracking(updateEntity);
+
+            //Ensure the target has been updated and the update is not considered a change.
+            Assert.IsFalse(testEntities[0].IsModified());
+            Assert.AreEqual(updateEntity.Name, testEntities[0].Name);
+
+            //Now check that is thew property has a change already its not overwritten.
+            testEntities[1].Name = "My Change";
+            testEntities[1].UpdateTracking(updateEntity);
+
+            Assert.IsTrue(testEntities[1].IsModified());
+            Assert.AreNotEqual(updateEntity.Name, testEntities[1].Name);
         }
     }
 }

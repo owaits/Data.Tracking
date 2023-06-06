@@ -267,6 +267,63 @@ namespace Oarw.Data.Tracking
             return targetTracker;
         }
 
+        /// <summary>
+        /// Updates a tracked entity with new values from the source without considering any differences as changes.
+        /// </summary>
+        /// <remarks>
+        /// Use when you want to update the values on an existing tracked entity with new values that are not changes to b tracked.
+        /// </remarks>
+        /// <param name="target">The target enitity that is being tracked and that should be updated.</param>
+        /// <param name="source">An enttity that is not being tracked but contains newer values than the target..</param>
+        /// <returns>The updated tracking state.</returns>
+        public static TrackingState UpdateTracking(this ITrackableObject target, ITrackableObject source)
+        {
+            TrackingState targetTracker = GetTracker(target);
+
+            foreach (var property in target.GetType().GetProperties())
+            {
+
+                if (property.PropertyType != typeof(TrackingState) && ShouldAllowProperty(property))
+                {
+                    //targetTracker.UnmodifiedState.Add(property, property.GetValue(target));
+
+                    if (property.PropertyType.IsGenericType && property.PropertyType.IsAssignableTo(typeof(System.Collections.IEnumerable)))
+                    {
+                        dynamic targetList = property.GetValue(target);
+                        if (targetList != null)
+                        {
+                            dynamic sourceList = property.GetValue(source);
+                            MergeTracking(targetList, sourceList);
+                        }
+                    }
+                    else if (property.PropertyType.IsAssignableTo(typeof(ITrackableObject)))
+                    {
+                        ITrackableObject sourceItem = property.GetValue(source) as ITrackableObject;
+                        if (sourceItem != null)
+                        {
+                            ITrackableObject trackedItem = property.GetValue(target) as ITrackableObject;
+                            if (trackedItem != null)
+                            {
+                                trackedItem.UpdateTracking(sourceItem);
+                            }
+                        }
+                    }
+                    else if (targetTracker.UnmodifiedState.TryGetValue(property, out object targetUnmodifiedValue) && !IsPropertyModified(target, property, targetUnmodifiedValue))
+                    {
+                        //Only update properties that have no changes so the update does not clear out unsaved modifications.
+                        //If there are no modifications then copy across the source value to the target without effecting the modified state.
+
+                        var sourceValue = property.GetValue(source);
+                        property.SetValue(target, sourceValue);                     //Copy across the source value to the target.
+                        targetTracker.UnmodifiedState[property] = sourceValue;      //Update the unmodified tracked state so that the new value is not seen as a change.
+                    }
+                }
+            }
+
+            trackedObjects[target] = targetTracker;
+            return targetTracker;
+        }
+
         public static bool IsTracking(this IEnumerable<ITrackableObject> source)
         {
             return source.All(item => item.IsTracking());
