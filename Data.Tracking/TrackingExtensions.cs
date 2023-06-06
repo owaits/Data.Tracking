@@ -276,6 +276,34 @@ namespace Oarw.Data.Tracking
         /// <param name="target">The target enitity that is being tracked and that should be updated.</param>
         /// <param name="source">An enttity that is not being tracked but contains newer values than the target..</param>
         /// <returns>The updated tracking state.</returns>
+        public static IList<TEntity> UpdateTracking<TEntity>(this IList<TEntity> target, IList<TEntity> source) where TEntity : ITrackableObject
+        {
+            //Go through the new data and apply any modifications to the target.
+            foreach (ITrackableObject targetItem in target)
+            {
+                ITrackableObject sourceItem = null;
+
+                if (source != null)
+                    sourceItem = source.FirstOrDefault(item => item.Id == targetItem.Id);
+
+                if (sourceItem != null)
+                {
+                    targetItem.UpdateTracking(sourceItem);
+                }
+            }
+
+            return target;
+        }
+
+        /// <summary>
+        /// Updates a tracked entity with new values from the source without considering any differences as changes.
+        /// </summary>
+        /// <remarks>
+        /// Use when you want to update the values on an existing tracked entity with new values that are not changes to b tracked.
+        /// </remarks>
+        /// <param name="target">The target enitity that is being tracked and that should be updated.</param>
+        /// <param name="source">An enttity that is not being tracked but contains newer values than the target..</param>
+        /// <returns>The updated tracking state.</returns>
         public static TrackingState UpdateTracking(this ITrackableObject target, ITrackableObject source)
         {
             TrackingState targetTracker = GetTracker(target);
@@ -291,7 +319,7 @@ namespace Oarw.Data.Tracking
                         if (targetList != null)
                         {
                             dynamic sourceList = property.GetValue(source);
-                            MergeTracking(targetList, sourceList);
+                            UpdateTracking(targetList, sourceList);
                         }
                     }
                     else if (property.PropertyType.IsAssignableTo(typeof(ITrackableObject)))
