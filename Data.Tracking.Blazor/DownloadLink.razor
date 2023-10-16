@@ -1,20 +1,33 @@
 ﻿@inject IJSRuntime js
 @inject HttpSecure http
 
+@if(string.IsNullOrEmpty(Tooltip))
+{
+   <button class="@css" @attributes="InputAttributes" @onclick="@(()=>DownloadPdf())">@ChildContent</button> 
+}
+else
+{
+    <button class="@css" data-toggle="tooltip" title="@Tooltip" @attributes="InputAttributes" @onclick="@(()=>DownloadPdf())">@ChildContent</button>
+}
 
 
-<button class="@css" @onclick="@(()=>DownloadPdf())">@ChildContent</button>
 
 
 @code {
-    [Parameter]
+    [Parameter, EditorRequired]
     public string url { get; set; }
 
     [Parameter]
     public string css { get; set; }
 
     [Parameter]
+    public string Tooltip { get; set; }
+
+    [Parameter]
     public RenderFragment ChildContent { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object> InputAttributes { get; set; }
 
     async Task DownloadPdf()
     {
