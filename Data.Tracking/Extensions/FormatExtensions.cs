@@ -172,7 +172,26 @@ namespace Oarw.Data.Tracking.Extensions
             if (value.Minutes > 0)
                 return $"{value.Minutes} minute{(value.Minutes > 1 ? "s": string.Empty)}";
             return value.ToString();
+        }
 
+        /// <summary>
+        /// Formats the time span as a human readable string using the interval to determine the units of days, hours or minutes.
+        /// </summary>
+        /// <remarks>
+        /// To specify that the time span is always shown as a faction of days pass in an interval of TimeSpan.FromDays(1).
+        /// </remarks>
+        /// <param name="value">The value.</param>
+        /// <param name="interval">The unit of time to use when displaying the time, an interval of 1 days will ensure the time is displayed as a faction of days.</param>
+        /// <returns></returns>
+        public static string FormatTimeSpan(this TimeSpan value, TimeSpan interval)
+        {
+            if (interval.Days > 0)
+                return $"{value.TotalDays} day{(value.Days > 1 ? "s" : string.Empty)}";
+            if (interval.Hours > 0)
+                return $"{value.TotalHours} hour{(value.TotalHours > 1 ? "s" : string.Empty)}";
+            if (interval.Minutes > 0)
+                return $"{value.TotalMinutes} minute{(value.TotalMinutes > 1 ? "s" : string.Empty)}";
+            return value.ToString();
         }
 
         public static string FormatForCSV(this string value)

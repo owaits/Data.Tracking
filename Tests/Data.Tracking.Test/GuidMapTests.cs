@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Monica.Data.Test
+namespace Oarw.Data.Tracking.Test
 {
     [TestClass]
     public class GuidMapTests

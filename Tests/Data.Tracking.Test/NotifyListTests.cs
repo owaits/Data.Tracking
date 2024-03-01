@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Oarw.Data.Tracking.Test.TestData
+namespace Oarw.Data.Tracking.Test
 {
     [TestClass]
     public class NotifyListTests

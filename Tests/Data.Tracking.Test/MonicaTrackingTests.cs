@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using Oarw.Data.Tracking.TestData;
 
-namespace Monica.Data.Test
+namespace Oarw.Data.Tracking.Test
 {
     [TestClass]
     public class TrackingTests
