@@ -166,11 +166,11 @@ namespace Oarw.Data.Tracking.Extensions
         public static string FormatTimeSpan(this TimeSpan value)
         {
             if (value.Days > 0)
-                return $"{value.Days} day{(value.Days > 1 ? "s": string.Empty)}";
+                return $"{value.TotalDays} day{(value.Days > 1 ? "s": string.Empty)}";
             if (value.Hours > 0)
-                return $"{value.Hours} hour{(value.Hours > 1 ? "s": string.Empty)}";
+                return $"{value.TotalHours} hour{(value.Hours > 1 ? "s": string.Empty)}";
             if (value.Minutes > 0)
-                return $"{value.Minutes} minute{(value.Minutes > 1 ? "s": string.Empty)}";
+                return $"{value.TotalMinutes} minute{(value.Minutes > 1 ? "s": string.Empty)}";
             return value.ToString();
         }
 

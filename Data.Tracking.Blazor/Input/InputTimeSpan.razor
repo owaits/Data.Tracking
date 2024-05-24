@@ -9,6 +9,7 @@
             @(Resolution.FormatName())
         </button>
         <div class="dropdown-menu p-1" aria-labelledby="vatRateDropdown">
+            <a class="dropdown-item" @onclick="(()=> Resolution = TimeResolution.Minute)">Minute(s)</a>
             <a class="dropdown-item" @onclick="(()=> Resolution = TimeResolution.Hour)">Hour(s)</a>
             <a class="dropdown-item" @onclick="(()=> Resolution = TimeResolution.Day)">Day(s)</a>
             <a class="dropdown-item" @onclick="(()=> Resolution = TimeResolution.Week)">Week(s)</a>

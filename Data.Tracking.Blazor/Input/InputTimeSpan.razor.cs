@@ -16,6 +16,8 @@ namespace Oarw.Data.Tracking.Blazor.Input
     {
         enum TimeResolution
         {
+            [Display(Name = "Minute(s)")]
+            Minute,
             [Display(Name = "Hour(s)")]
             Hour,
             [Display(Name = "Day(s)")]
@@ -47,6 +49,8 @@ namespace Oarw.Data.Tracking.Blazor.Input
 
                 switch(Resolution)
                 {
+                    case TimeResolution.Minute:
+                        return Math.Abs(((TimeSpan)CurrentValue).TotalMinutes);
                     case TimeResolution.Hour:
                         return Math.Abs(((TimeSpan)CurrentValue).TotalHours);
                     case TimeResolution.Day:
@@ -63,6 +67,9 @@ namespace Oarw.Data.Tracking.Blazor.Input
             {
                 switch(Resolution)
                 {
+                    case TimeResolution.Minute:
+                        CurrentValue = (value == null ? null : TimeSpan.FromMinutes((double)value));
+                        break;
                     case TimeResolution.Hour:
                         CurrentValue = (value == null? null : TimeSpan.FromHours((double) value));
                         break;
@@ -106,6 +113,8 @@ namespace Oarw.Data.Tracking.Blazor.Input
                     Resolution = TimeResolution.Day;
                 else if (((TimeSpan)CurrentValue).TotalHours % 1 == 0)
                     Resolution = TimeResolution.Hour;
+                else if (((TimeSpan)CurrentValue).TotalMinutes % 1 == 0)
+                    Resolution = TimeResolution.Minute;
 
                 StateHasChanged();
             }
