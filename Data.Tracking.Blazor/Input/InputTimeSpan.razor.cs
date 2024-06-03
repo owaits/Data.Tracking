@@ -40,6 +40,12 @@ namespace Oarw.Data.Tracking.Blazor.Input
         [Parameter]
         public RenderFragment Append { get; set; }
 
+        [Parameter]
+        public int Min { get; set; } = 0;
+
+        [Parameter]
+        public int Max { get; set; } = 720;
+
         private double? Offset
         {
             get

@@ -3,7 +3,7 @@
 
 <div style="min-width:6em" class="input-group form-inline @(Small ? "input-group-sm":"")">
 
-    <InputNumber type="number" class="form-control" size="3" @bind-Value="Offset" min="0" max="100" placeholder="@Placeholder"/>
+    <InputNumber type="number" class="form-control" size="3" @bind-Value="Offset" min="@Min" max="@Max" placeholder="@Placeholder"/>
     <div class="input-group-append">
         <button id="resolutionDropdown" type="button" class="input-group-text dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             @(Resolution.FormatName())
