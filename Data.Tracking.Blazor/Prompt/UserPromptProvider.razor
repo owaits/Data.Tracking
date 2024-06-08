@@ -1,0 +1,20 @@
+﻿<CascadingValue Value="this">
+    @ChildContent
+</CascadingValue>
+
+
+<EditPrompt @ref="globalEditPrompt" Title="@Title" Level="@Level" Size="@Size" Header="PromptHeader" Footer="PromptFooter" FooterTools="PromptFooterTools" afterOk="Ok" afterCancel="Cancel" afterOpen="Open">
+    @if(PromptBinding is EditPrompt)
+    {
+        @PromptContent        
+    }    
+</EditPrompt>
+
+<UserPrompt @ref="globalPrompt" Title="@Title" Level="@Level" Size="@Size" Header="PromptHeader" Footer="PromptFooter" FooterTools="PromptFooterTools" afterOk="Ok" afterCancel="Cancel" afterClose="Close" afterOpen="Open">
+    @if(!(PromptBinding is EditPrompt))
+    {
+        @PromptContent
+    }
+</UserPrompt>
+
+

@@ -1,0 +1,61 @@
+﻿@inherits UserPrompt
+@inject HttpClient Http
+@inject IJSRuntime js
+
+@if (PromptProvider == null)
+{
+    <div class="modal fade" id="@Id.ToString()" role="dialog">
+        <div class="modal-dialog @(GetModalStyles())">
+            <div class="modal-content">                
+                @if(Model != null)
+                {
+                    <EditForm Model="@Model" OnValidSubmit="Submit">
+                        <div class="modal-header">
+                            @if (Header != null)
+                            {
+                                @Header
+                            }
+                            else
+                            {
+                                <h4 class="modal-title">@Title</h4>
+                            }
+                            <button type="button" class="close" @onclick="@(() => Cancel())" data-dismiss="modal"><i class="oi oi-x" /></button>
+                        </div>
+
+                        @if (ChildContent != null)
+                        {
+                            <div class="modal-body">
+                                <DataAnnotationsValidator />
+
+                                @ChildContent
+
+                                <div class="alert-danger">
+                                    <ValidationSummary class="text-danger" />
+                                </div>
+                            </div>
+                        }
+
+                        <div class="modal-footer" @onclick:stopPropagation="true">
+                            @if (Footer != null)
+                            {
+                                @Footer(this)
+                            }
+                            else
+                            {
+                                <button class="btn btn-default" @onclick="@(() => Cancel())" type="button" data-dismiss="modal">Cancel</button>
+                                <button class="btn btn-@($"{Level.ToString().ToLower()}")" type="submit">OK</button>
+                            }
+                        </div>
+                    </EditForm>
+                }   
+                else
+                {
+                    <div class="modal-header">
+                        <h4 class="modal-title">@Title</h4>
+                        <button type="button" class="close" @onclick="@(() => Cancel())" data-dismiss="modal"><i class="oi oi-x" /></button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}

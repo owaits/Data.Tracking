@@ -1,0 +1,49 @@
+﻿@inject HttpClient Http
+@inject IJSRuntime js
+
+@if(PromptProvider == null)
+{
+    <div class="modal fade" id="@Id.ToString()" role="dialog">
+        <div class="modal-dialog @(GetModalStyles())">
+            <div class="modal-content">
+                <div class="modal-header">
+                    @if(Header != null)
+                    {
+                        @Header
+                    }
+                    else
+                    {
+                        <h4 class="modal-title">@Title</h4>                    
+                    }                
+                    <button type="button" class="close" @onclick="@(() => Cancel())" data-dismiss="modal"><i class="oi oi-x" /></button>
+                </div>
+
+                @if (ChildContent != null)
+                {
+                    <div class="modal-body">
+                        @ChildContent
+                    </div>
+                }
+                <div class="modal-footer" @onclick:stopPropagation="true">
+                    @if (FooterTools != null)
+                    {
+                        <div class="mr-auto">
+                            @FooterTools(this)
+                        </div>
+                    }
+
+                    @if(Footer != null)
+                    {
+                        @Footer(this)
+                    }
+                    else
+                    {
+                        <button class="btn btn-default" @onclick="@(() => Cancel())" data-dismiss="modal">Cancel</button>
+                        <button class="btn btn-@($"{Level.ToString().ToLower()}")" @onclick="@(() => Ok())">OK</button>                 
+                    }   
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
