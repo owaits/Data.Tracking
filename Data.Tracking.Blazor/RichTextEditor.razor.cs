@@ -50,7 +50,17 @@ namespace Oarw.Data.Tracking.Blazor
 
         public async ValueTask DisposeAsync()
         {
-            await(await ckEditorModule).InvokeAsync<IJSObjectReference>("disposeCKEditor", editor);
+            try
+            {
+                var module = await ckEditorModule;
+                if (module != null && editor != null)
+                {
+                    await module.InvokeAsync<IJSObjectReference>("disposeCKEditor", editor);
+                }
+            }
+            catch (Exception ex)
+            {
+            }            
         }
     }
 }
