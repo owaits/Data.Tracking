@@ -40,9 +40,14 @@
 
     private string DetermineTextDecoration()
     {
-        if (Entity.IsDeleted())
+        return DetermineTextDecoration(Entity);
+    }
+
+    public static string DetermineTextDecoration(ITrackableObject entity)
+    {
+        if (entity.IsDeleted())
             return "text-decoration: line-through !important ";
-        if (Entity.IsNew())
+        if (entity.IsNew())
             return "font-weight: bold !important ";
 
         return string.Empty;
@@ -50,16 +55,21 @@
 
     private string DetermineRowStyle()
     {
-        if (Entity.HasChanges())
-            return $"{CssClass} table-active";
-
-        if (Entity.IsPrintRequired())
-            return $"{CssClass} table-info";
-
         if (IsWarning())
             return $"{CssClass} table-warning";
 
-        return CssClass;
+        return $"{CssClass} {DetermineRowStyle(entity)}";
+    }
+
+    private static string DetermineRowStyle(ITrackableObject entity)
+    {
+        if (entity.HasChanges())
+            return $"table-active";
+
+        if (entity.IsPrintRequired())
+            return $"table-info";
+
+        return string.Empty;
     }
 
 }
