@@ -1,16 +1,53 @@
 ﻿@using Oarw.Data.Tracking
 
-<button type="button" class="btn btn-danger btn-sm @CssClass" @onclick="@(()=>OpenDelete())"><i class="fas fa-backspace" aria-hidden="true"></i></button>
+<button type="button" class="btn btn-danger btn-sm @CssClass" @onclick="@(()=>DoDelete())"><i class="fas fa-backspace" aria-hidden="true"></i></button>
 
 @code {
+    /// <summary>
+    /// Reference to the java script runtime.
+    /// </summary>
+    [Inject]
+    public IJSRuntime JS { get; set; }
+
+    /// <summary>
+    /// Additional style parameters to apply to the delete button.
+    /// </summary>
     [Parameter]
     public string CssClass { get; set; }
 
-    [Parameter]
+    /// <summary>
+    /// The tracked entity to be deleted when the user selects to delete.
+    /// </summary>
+    [Parameter, EditorRequired]
     public ITrackableObject deleteItem { get; set; }
 
-    void OpenDelete()
+    /// <summary>
+    /// Gets or sets whether a prompt is displayed to the user requiring the user to confirm whether the item is deleted.
+    /// </summary>
+    [Parameter]
+    public bool ShowConfirmation { get; set; } = false;
+
+
+    /// <summary>
+    /// The message to display to the user when confirming if the item should be deleted.
+    /// </summary>
+    [Parameter]
+    public string ConfirmationMessage { get; set; } = "Are you sure you want to delete this item?";
+
+    /// <summary>
+    /// Processes the user request to delete this item.
+    /// </summary>
+    /// <returns></returns>
+    async Task DoDelete()
     {
+        if (ShowConfirmation)
+        {
+            bool confirmed = await JS.InvokeAsync<bool>("confirm", ConfirmationMessage);
+
+            if (!confirmed)
+                return;
+        }        
+
         deleteItem.Delete();
     }
 
