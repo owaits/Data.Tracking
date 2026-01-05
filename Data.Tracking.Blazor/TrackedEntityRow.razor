@@ -61,7 +61,7 @@
         return $"{CssClass} {DetermineRowStyle(entity,0)}";
     }
 
-    private static string DetermineRowStyle<TEntity>(TEntity entity, int index) where TEntity : ITrackableObject
+    public static string DetermineRowStyle<TEntity>(TEntity entity, int index) where TEntity : ITrackableObject
     {
         if (entity.HasChanges())
             return $"table-active";
