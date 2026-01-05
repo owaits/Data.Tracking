@@ -40,10 +40,10 @@
 
     private string DetermineTextDecoration()
     {
-        return DetermineTextDecoration(Entity);
+        return DetermineTextDecoration(Entity,0);
     }
 
-    public static string DetermineTextDecoration(ITrackableObject entity)
+    public static string DetermineTextDecoration<TEntity>(TEntity entity, int index) where TEntity : ITrackableObject
     {
         if (entity.IsDeleted())
             return "text-decoration: line-through !important ";
@@ -58,10 +58,10 @@
         if (IsWarning())
             return $"{CssClass} table-warning";
 
-        return $"{CssClass} {DetermineRowStyle(entity)}";
+        return $"{CssClass} {DetermineRowStyle(entity,0)}";
     }
 
-    private static string DetermineRowStyle(ITrackableObject entity)
+    private static string DetermineRowStyle<TEntity>(TEntity entity, int index) where TEntity : ITrackableObject
     {
         if (entity.HasChanges())
             return $"table-active";
