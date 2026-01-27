@@ -144,11 +144,57 @@ namespace Oarw.Data.Tracking.Extensions
             return ((DateTime)value).FormatTime(format);
         }
 
-        public static string FormatTime(this DateTime value, string format = null)
+        /// <summary>
+        /// Formats a date and time as a time using HH:mm format.
+        /// </summary>
+        /// <param name="value">The date and time to be formatted.</param>
+        /// <param name="format">An optional alternative format to use..</param>
+        /// <param name="showTimeZone">Whether the abbreviated time zon name is displayed after the time.</param>
+        /// <returns>The time formatted as HH:mm.</returns>
+        public static string FormatTime(this DateTime value, string format = null, bool showTimeZone = false)
         {
             try
             {
-                return value.ToString(format ?? "HH:mm");
+                var result = value.ToString(format ?? "HH:mm");
+                if (showTimeZone)
+                {
+                    result += " " + value.FormatTimeZone();
+                }
+                return result;
+            }
+            catch (Exception ex)
+            {
+                return $"[error: {ex.Message}]";
+            }
+        }
+
+        /// <summary>
+        /// Gets the time zone name in its abbreviated form, adjusting for daylight saving hours.
+        /// </summary>
+        /// <param name="value">The date and time to return the time zone name for.</param>
+        /// <returns>The abbreviated time zone name.</returns>
+        public static string FormatTimeZone(this DateTime value)
+        {
+            try
+            {
+                return value.IsDaylightSavingTime() ? TimeZoneInfo.Local.DaylightName : TimeZoneInfo.Local.StandardName;
+            }
+            catch (Exception ex)
+            {
+                return $"[error: {ex.Message}]";
+            }
+        }
+
+        /// <summary>
+        /// Uses the standard function ToShortTimeString() to convert a date and time but appends the time zone name.
+        /// </summary>
+        /// <param name="value">The date and time to convert.</param>
+        /// <returns>The short time with the time zone appended.</returns>
+        public static string ToShortTimeStringWithZone(this DateTime value)
+        {
+            try
+            {
+                return value.ToShortTimeString() + " " + value.FormatTimeZone();
             }
             catch (Exception ex)
             {
