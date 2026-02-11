@@ -1,8 +1,8 @@
 ﻿
 @if (Inline)
 {
-    <div class="row mb-2">
-        <label class="col-sm-4">@(Label):</label>
+    <div class="row mb-2 input-label @Class">
+        <label class="col-sm-4 input-label-title">@(Label):</label>
         <div class="col-sm-8">
             @ChildContent
         </div>
@@ -10,27 +10,27 @@
 }
 else if (Checkbox)
 {
-    <div class="form-check">
+    <div class="form-check input-label @Class">
         @ChildContent
-        <label class="form-check-label">@Label</label>
+        <label class="form-check-label input-label-title">@Label</label>
         @if (!string.IsNullOrEmpty(Help))
         {
             <div>
-                <small class="form-text text-muted">@Help</small>
+                <small class="form-text text-muted input-label-help">@Help</small>
             </div>
         }
     </div>
     }
 else
 {
-<div class="form-group">
-    <label class="">@(Label):</label>
-    @ChildContent
-    @if (!string.IsNullOrEmpty(Help))
-    {
-        <small class="form-text text-muted">@Help</small>
-    }
-</div>
+    <div class="form-group input-label @Class">
+        <label class="input-label-title">@(Label):</label>
+        @ChildContent
+        @if (!string.IsNullOrEmpty(Help))
+        {
+            <small class="form-text text-muted input-label-help">@Help</small>
+        }
+    </div>
 }
 
 
@@ -39,7 +39,7 @@ else
     [Parameter]
     public bool Inline { get; set; } = false;
 
-        [Parameter]
+    [Parameter]
     public bool Checkbox { get; set; } = false;
 
     [Parameter]
@@ -47,6 +47,9 @@ else
 
     [Parameter]
     public string Help { get; set; }
+
+    [Parameter]
+    public string Class { get; set; }
 
     [Parameter]
     public RenderFragment ChildContent { get; set; }
