@@ -2,7 +2,7 @@
 @if (Inline)
 {
     <div class="row mb-2 input-label @Class">
-        <label class="col-sm-4 input-label-title">@(Label):</label>
+        <label class="col-sm-4 input-label-title">@((MarkupString)Label):</label>
         <div class="col-sm-8">
             @ChildContent
         </div>
@@ -12,11 +12,11 @@ else if (Checkbox)
 {
     <div class="form-check input-label @Class">
         @ChildContent
-        <label class="form-check-label input-label-title">@Label</label>
+        <label class="form-check-label input-label-title">@((MarkupString)Label)</label>
         @if (!string.IsNullOrEmpty(Help))
         {
             <div>
-                <small class="form-text text-muted input-label-help">@Help</small>
+                <small class="form-text text-muted input-label-help">@((MarkupString)Help)</small>
             </div>
         }
     </div>
@@ -24,11 +24,11 @@ else if (Checkbox)
 else
 {
     <div class="form-group input-label @Class">
-        <label class="input-label-title">@(Label):</label>
+        <label class="input-label-title">@((MarkupString)Label):</label>
         @ChildContent
         @if (!string.IsNullOrEmpty(Help))
         {
-            <small class="form-text text-muted input-label-help">@Help</small>
+            <small class="form-text text-muted input-label-help">@((MarkupString)Help)</small>
         }
     </div>
 }
