@@ -25,8 +25,17 @@ namespace Oarw.Data.Tracking.Blazor
         [CascadingParameter]
         public TrackedUpdate UpdateContainer { get; set; }
 
+        /// <summary>
+        /// Gets or sets the edit items that are mopnitored for changes. This can be set directly or by setting the EditItem property. If both are set, EditItems takes precedence.
+        /// </summary>
         [Parameter]
         public IEnumerable<ITrackableObject> EditItems { get; set; }
+
+        /// <summary>
+        /// Gets or sets the edit items that are mopnitored for changes. This can be set directly or by setting the EditItem property. If both are set, EditItems takes precedence.
+        /// </summary>
+        [Parameter]
+        public ITrackableObject EditItem { get; set; }
 
         [Parameter,EditorRequired]
         public string Url { get; set; }
@@ -52,9 +61,16 @@ namespace Oarw.Data.Tracking.Blazor
         }
 
         private IEnumerable<ITrackableObject> editItems = null;
+        private ITrackableObject editItem = null;
 
         override protected void OnParametersSet()
         {
+            if (editItem != EditItem)
+            {
+                editItem = EditItem;
+                EditItems = editItem != null ? new List<ITrackableObject>() { editItem } : null;
+            }
+
             if (editItems != EditItems)
             {
                 editItems = EditItems;
