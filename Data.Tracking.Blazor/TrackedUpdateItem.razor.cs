@@ -25,30 +25,8 @@ namespace Oarw.Data.Tracking.Blazor
         [CascadingParameter]
         public TrackedUpdate UpdateContainer { get; set; }
 
-        private IEnumerable<ITrackableObject> editItems = null;
-
         [Parameter]
-        public IEnumerable<ITrackableObject> EditItems 
-        { 
-            get { return editItems; }
-            set
-            {
-                if(editItems != value)
-                {
-                    editItems = value;
-
-                    if(changeHandler != null)
-                        editItems.WhenChanged(changeHandler);
-                }
-            }
-        }
-
-        [Parameter]
-        public ITrackableObject EditItem
-        {
-            get { return editItems?.FirstOrDefault(); }
-            set { editItems = value == null ? null : new ITrackableObject[] { value }; }
-        }
+        public IEnumerable<ITrackableObject> EditItems { get; set; }
 
         [Parameter,EditorRequired]
         public string Url { get; set; }
@@ -67,13 +45,22 @@ namespace Oarw.Data.Tracking.Blazor
         {
             changeHandler = new Action(() => UpdateContainer.Refresh());
 
-            if (editItems != null)
-                editItems.WhenChanged(changeHandler);
-
             print = Services.GetService<ITrackedPrintService>();
 
             if (UpdateContainer != null)
                 UpdateContainer.Updates.Add(this);
+        }
+
+        private IEnumerable<ITrackableObject> editItems = null;
+
+        override protected void OnParametersSet()
+        {
+            if (editItems != EditItems)
+            {
+                editItems = EditItems;
+                if (changeHandler != null)
+                    editItems.WhenChanged(changeHandler);
+            }
         }
 
         public bool HasChanges()
@@ -88,8 +75,7 @@ namespace Oarw.Data.Tracking.Blazor
 
         public async Task CancelUpdate()
         {
-            if(editItems!= null) editItems.Undo();
-            if (EditItem != null) EditItem.Undo();
+            if(EditItems!= null) EditItems.Undo();
             await Task.CompletedTask;
         }
 

@@ -1,5 +1,4 @@
-﻿@inject IJSRuntime js
-@inject HttpSecure http
+﻿@using Microsoft.Extensions.DependencyInjection
 
 @if(string.IsNullOrEmpty(Tooltip))
 {
@@ -10,10 +9,11 @@ else
     <button class="@css" data-toggle="tooltip" title="@Tooltip" @attributes="InputAttributes" @onclick="@(()=>DownloadPdf())">@ChildContent</button>
 }
 
-
-
-
 @code {
+
+    [Inject]
+    public IServiceProvider ServiceProvider { get; set; }
+
     [Parameter, EditorRequired]
     public string url { get; set; }
 
@@ -29,8 +29,30 @@ else
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object> InputAttributes { get; set; }
 
-    async Task DownloadPdf()
+    /// <summary>
+    /// Downloads a PDF file from the specified URL. This method first attempts to use the HttpSecure service for secure downloads in Blazor WebAssembly.
+    /// </summary>
+    /// <reamarks>If the HttpSecure service is not available, it falls back to using the NavigationManager service for file.</remarks>
+    /// <returns></returns>
+    /// <exception cref="InvalidOperationException"></exception>
+    protected virtual async Task DownloadPdf()
     {
-        await http.NavigateToSecure(url);
+        //First attempt to get the HTTPSecure service to navigate to the URL, if it exists. This allows for secure file downloads in Blazor WebAssembly.
+        HttpSecure http = ServiceProvider.GetService<HttpSecure>();
+        if(http != null)
+        {
+            await http.NavigateToSecure(url);
+            return;
+        }
+
+        //Next attempt to get the NavigationManager service to navigate to the URL, if it exists. This allows for file downloads in Blazor Server.
+        NavigationManager navigation = ServiceProvider.GetService<NavigationManager>();
+        if (url != null)
+        {
+            navigation.NavigateTo(url, true);            
+        }
+
+        throw new InvalidOperationException("Unable to download file. No HttpSecure or NavigationManager service found.");       
+
     }
 }

@@ -39,10 +39,6 @@
         [Inject]
         protected IJSRuntime JavaScript { get; set; }
 
-
-
-        ElementReference upload;
-
         async Task UploadFile(InputFileChangeEventArgs e)
         {
             var files = e.GetMultipleFiles();

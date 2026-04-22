@@ -14,16 +14,15 @@ namespace Oarw.Data.Tracking.Blazor
         [Inject]
         public IJSRuntime JavaScript { get; set; }
 
-        string _id;
-
-        [Parameter]
-        public string Id
-        {
-            get => _id ?? $"CKEditor_{uid}";
-            set => _id = value;
-        }
-
         readonly string uid = Guid.NewGuid().ToString().ToLower().Replace("-", "");
+        
+        [Parameter]
+        public string Id { get; set; }
+
+        protected string GetIdOrDefault()
+        {
+            return Id ?? $"CKEditor_{uid}";
+        }
 
         private Task<IJSObjectReference> _ckEditorModule;
         private Task<IJSObjectReference> ckEditorModule => _ckEditorModule ??= JavaScript.InvokeAsync<IJSObjectReference>("import", "/_content/Oarw.Data.Tracking.Blazor/js/ckEditor/ckEditor-module.js?1").AsTask();
@@ -34,7 +33,7 @@ namespace Oarw.Data.Tracking.Blazor
         {
             if (firstRender)
             {
-                editor = await (await ckEditorModule).InvokeAsync<IJSObjectReference>("initialiseCKEditor", Id, DotNetObjectReference.Create(this));
+                editor = await (await ckEditorModule).InvokeAsync<IJSObjectReference>("initialiseCKEditor", GetIdOrDefault(), DotNetObjectReference.Create(this));
             }
 
             await base.OnAfterRenderAsync(firstRender);
@@ -58,7 +57,7 @@ namespace Oarw.Data.Tracking.Blazor
                     await module.InvokeAsync<IJSObjectReference>("disposeCKEditor", editor);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
             }            
         }

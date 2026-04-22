@@ -7,20 +7,8 @@
 
 @code {
 
-    ITrackableObject entity = null;
-
     [Parameter]
-    public ITrackableObject Entity
-    {
-        get { return entity; }
-        set
-        {
-            if (entity != value)
-            {
-                entity = value;
-            }
-        }
-    }
+    public ITrackableObject Entity { get; set; }
 
     [Parameter]
     public RenderFragment ChildContent { get; set; }
@@ -58,7 +46,7 @@
         if (IsWarning())
             return $"{CssClass} table-warning";
 
-        return $"{CssClass} {DetermineRowStyle(entity,0)}";
+        return $"{CssClass} {DetermineRowStyle(Entity,0)}";
     }
 
     public static string DetermineRowStyle<TEntity>(TEntity entity, int index) where TEntity : ITrackableObject
