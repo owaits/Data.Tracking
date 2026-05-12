@@ -1,6 +1,6 @@
 ﻿@using Oarw.Data.Tracking
 
-<button type="button" class="@CssClass" @onclick="@(()=>StartEdit())" data-toggle="modal" data-target="#trackedEditor_@(EditorId)">
+<button type="button" class="@CssClass" @onclick="@(()=>StartEdit())">
     @if (ChildContent != null) 
     { 
         @ChildContent
@@ -38,16 +38,16 @@
     [Parameter]
     public string CssClass { get; set; } = "btn btn-primary btn-sm";
 
-    void StartEdit()
+    async Task StartEdit()
     {
         if(Create != null)
         {
-            Editor.StartCreate(Create());
+            await Editor.StartCreate(Create());
 
         }
         else
         {
-            Editor.StartEdit(EditItem);
+            await Editor.StartEdit(EditItem);
         }
 
     }

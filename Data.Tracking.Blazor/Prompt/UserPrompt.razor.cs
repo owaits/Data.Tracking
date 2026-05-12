@@ -7,9 +7,11 @@ namespace Oarw.Data.Tracking.Blazor.Prompt
 {
     public partial class UserPrompt
     {
+        private ModalJsInterop modalJs;
+
         public Guid Id { get; set; } = Guid.NewGuid();
 
-        [Parameter]
+        [Parameter, EditorRequired]
         public string Title { get; set; }
 
 
@@ -64,6 +66,15 @@ namespace Oarw.Data.Tracking.Blazor.Prompt
 
         public event EventHandler OnRefresh;
 
+        protected override async Task OnInitializedAsync()
+        {
+            if(js != null)
+            {
+                modalJs = new ModalJsInterop(js);
+            }
+            await Task.CompletedTask;
+        }
+
         protected override void OnAfterRender(bool firstRender)
         {
             if (OnRefresh != null)
@@ -95,13 +106,13 @@ namespace Oarw.Data.Tracking.Blazor.Prompt
             return style;
         }
 
-        public void Show(Func<Task<bool>> okCallback)
+        public async Task Show(Func<Task<bool>> okCallback)
         {
             afterOk = okCallback;
-            Show();
+            await Show();
         }
 
-        public void Show()
+        public async Task Show()
         {
             if (PromptProvider != null)
             {
@@ -109,11 +120,8 @@ namespace Oarw.Data.Tracking.Blazor.Prompt
             }
             else
             {
-                InvokeAsync(async () =>
-                {
-                    await js.InvokeAsync<string>("openModal", $"#{Id}");
-                    await Open();
-                });                
+                await modalJs.Open($"#{Id}");
+                await Open();               
             }
         }
 
@@ -128,7 +136,7 @@ namespace Oarw.Data.Tracking.Blazor.Prompt
 
             if (PromptProvider == null)
             {
-                await js.InvokeAsync<string>("closeModal", $"#{Id}");
+                await modalJs.Close($"#{Id}");
                 await Close(true);
             }
 
@@ -145,7 +153,7 @@ namespace Oarw.Data.Tracking.Blazor.Prompt
 
             if (PromptProvider == null)
             {
-                await js.InvokeAsync<string>("closeModal", $"#{Id}");
+                await modalJs.Close($"#{Id}");
                 await Close(false);
             }
         }

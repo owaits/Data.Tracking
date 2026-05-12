@@ -1,16 +1,20 @@
-﻿using Oarw.Data.Tracking;
-using System.Net.Http;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using System.Threading.Tasks;
-using System.Net.Http.Json;
+using Oarw.Data.Tracking;
+using Oarw.Data.Tracking.Blazor.Prompt;
 using System;
-using Microsoft.AspNetCore.Components;
 using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Threading.Tasks;
+using static Oarw.Data.Tracking.Blazor.Prompt.UserPrompt;
 
 namespace Oarw.Data.Tracking.Blazor
 {
     public partial class TrackedEditor<TItem>: ITrackedEditor where TItem: class, ITrackableObject
     {
+        private EditPrompt userPrompt;
+
         public Guid EditorId { get; set; } = Guid.NewGuid();
 
         private bool Create { get; set; }
@@ -24,10 +28,7 @@ namespace Oarw.Data.Tracking.Blazor
         public string url { get; set; }
 
         [Parameter]
-        public string ModalCSS { get; set; }
-
-        [Parameter]
-        public int ZIndex { get; set; }
+        public Sizes Size { get; set; } = Sizes.Normal;
 
         [Parameter]
         public RenderFragment<TItem> EditModal { get; set; }
@@ -54,24 +55,24 @@ namespace Oarw.Data.Tracking.Blazor
             get { return bindings; }
         }
 
-        public void StartEdit(ITrackableObject editItem)
+        public async Task StartEdit(ITrackableObject editItem)
         {
             EditItem = (TItem) editItem;
 
             if (OnStartEdit != null)
                 OnStartEdit(Create, editItem);
 
-            StateHasChanged();
+            await userPrompt.Show(editItem, SaveEdit);
         }
 
-        public void StartCreate(ITrackableObject editItem)
+        public async Task StartCreate(ITrackableObject editItem)
         {
             Create = true;
 
-            StartEdit(editItem);
+            await StartEdit(editItem);
         }
 
-        public void CancelEdit()
+        public async Task CancelEdit()
         {
             ITrackableObject trackedEditItem = (ITrackableObject) EditItem;
             if(trackedEditItem.IsTracking())
@@ -81,8 +82,6 @@ namespace Oarw.Data.Tracking.Blazor
 
             EditItem = null;
             Create = false;
-
-            JsRuntime.InvokeAsync<string>("closeModal", $"#trackedEditor_{EditorId}");
 
             if (OnCancelEdit != null)
                 OnCancelEdit(Create, trackedEditItem);
@@ -132,7 +131,7 @@ namespace Oarw.Data.Tracking.Blazor
                 }
             }
 
-            CancelEdit();
+            await CancelEdit();
 
             if (OnFinishEdit != null)
                 OnFinishEdit(isCreate, itemToSave);

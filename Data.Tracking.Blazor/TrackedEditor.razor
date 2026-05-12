@@ -1,40 +1,18 @@
 ﻿@using Oarw.Data.Tracking
 @using System.Net.Http
 @using Microsoft.JSInterop
+@using Oarw.Data.Tracking.Blazor.Prompt
 @typeparam TItem
 
 @inject HttpClient Http
 @inject IJSRuntime JsRuntime;
 
-<div class="modal fade" style="@(ZIndex > 0 ? $"z-index: {ZIndex}" : "")" id="trackedEditor_@EditorId" role="dialog">
-    <div class="modal-dialog @(ModalCSS)">
-        <div class="modal-content">
-            @if (EditItem != null)
-            {
-                <EditForm Model="EditItem" OnValidSubmit="@(() => SaveEdit())">
-
-                    <div class="modal-header">
-
-                        <h4 class="modal-title">@(Create ? "New " + Title : "Edit " + Title)</h4>
-                        <button type="button" class="close" @onclick="@(() => CancelEdit())" data-dismiss="modal"><i class="oi oi-x" /></button>
-                    </div>
-                    <div class="modal-body">
-
-                        <DataAnnotationsValidator />
-
-                        @EditModal(EditItem)
-
-                        <ValidationSummary class="alert alert-danger text-danger" />
-                    </div>               
-                    <div class=" modal-footer">
-                        <button class="btn btn-default" type="submit">Save</button>
-                        <button class="btn btn-default" @onclick="@(() => CancelEdit())" data-dismiss="modal">Cancel</button>
-                    </div>
-                </EditForm>
-            }
-        </div>
-    </div>
-</div>
+<EditPrompt @ref="userPrompt" Title="@(Create ? "New " + Title : "Edit " + Title)" Size="@Size" afterCancel="CancelEdit">
+    @if (EditItem != null)
+    {
+        @EditModal(EditItem)
+    }
+</EditPrompt>
 
 <CascadingValue Value="this">
     @ChildContent

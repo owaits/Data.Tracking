@@ -1,0 +1,22 @@
+﻿@page "/prompt"
+@using Oarw.Data.Tracking
+@using Oarw.Data.Tracking.Blazor
+@using Oarw.Data.Tracking.Blazor.Prompt
+
+<h1>User Prompt</h1>
+
+<button class="btn btn-prinary" @onclick="()=> prompt.Show()" >Show Prompt</button>
+
+<UserPrompt @ref="prompt" Title="Test Prompt">
+    <p>This is the contents of the prompt.</p>        
+</UserPrompt>
+
+@code {
+    UserPrompt prompt;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.CompletedTask;
+    }
+
+}

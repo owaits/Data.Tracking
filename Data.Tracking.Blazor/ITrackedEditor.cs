@@ -10,9 +10,9 @@ namespace Oarw.Data.Tracking.Blazor
     {
         public Guid EditorId { get; set; }
 
-        void StartCreate(ITrackableObject editItem);
+        Task StartCreate(ITrackableObject editItem);
 
-        void StartEdit(ITrackableObject editItem);
+        Task StartEdit(ITrackableObject editItem);
 
         Task<bool> SaveEdit();
     }

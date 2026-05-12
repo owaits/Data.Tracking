@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
-using static System.Net.WebRequestMethods;
-using System.Numerics;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System;
 
 namespace Oarw.Data.Tracking.Blazor.Prompt
@@ -23,16 +20,16 @@ namespace Oarw.Data.Tracking.Blazor.Prompt
             }
         }
 
-        public void Show(object model, Func<Task<bool>> okCallback)
+        public async Task Show(object model, Func<Task<bool>> okCallback)
         {
             Model = model;
-            base.Show(okCallback);
+            await base.Show(okCallback);
         }
 
-        public void Show(object model)
+        public async Task Show(object model)
         {
             Model = model;
-            Show();
+            await Show();
         }
 
         protected async Task Submit()
