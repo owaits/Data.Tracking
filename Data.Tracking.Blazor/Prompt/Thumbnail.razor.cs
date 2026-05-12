@@ -12,7 +12,10 @@ namespace Oarw.Data.Tracking.Blazor.Prompt
         public string Url { get; set; }
 
         [Parameter, EditorRequired]
-        public string Label { get; set; }
+        public string Title { get; set; }
+
+        [Parameter]
+        public string Description { get; set; }
 
         [Parameter]
         public string Class { get; set; }
@@ -32,8 +35,6 @@ namespace Oarw.Data.Tracking.Blazor.Prompt
         {
             if(viewer != null)
                 await viewer.Show();
-
-            Console.WriteLine("click");
         }
     }
 }
