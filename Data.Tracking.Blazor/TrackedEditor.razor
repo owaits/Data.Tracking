@@ -8,11 +8,22 @@
 @inject IJSRuntime JsRuntime;
 
 <EditPrompt @ref="userPrompt" Title="@(Create ? "New " + Title : "Edit " + Title)" Size="@Size" afterCancel="CancelEdit">
-    @if (EditItem != null)
+    @if(ActiveBinding?.TryGetEditTemplate(EditItem, out RenderFragment template) == true)
+    {
+        @template
+    }
+    else if (EditItem != null)
     {
         @EditModal(EditItem)
     }
 </EditPrompt>
+
+@if(Bindings != null)
+{
+    <TrackedUpdate @ref="updateDefinitions" AutoSaveInterval="@AutoSaveInterval">
+        @Bindings
+    </TrackedUpdate>
+}
 
 <CascadingValue Value="this">
     @ChildContent

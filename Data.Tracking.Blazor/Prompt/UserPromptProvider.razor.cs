@@ -86,7 +86,7 @@ namespace Oarw.Data.Tracking.Blazor.Prompt
             globalPrompt.Refresh();
         }
 
-        public void Show(UserPrompt prompt)
+        public async Task Show(UserPrompt prompt)
         {
             PromptBinding = prompt;
 
@@ -95,11 +95,11 @@ namespace Oarw.Data.Tracking.Blazor.Prompt
             if(PromptBinding is EditPrompt)
             {
                 globalEditPrompt.Model = ((EditPrompt)PromptBinding).Model;
-                globalEditPrompt.Show();
+                await globalEditPrompt.Show();
             }
             else
             {
-                globalPrompt.Show();
+                await globalPrompt.Show();
             }
 
             if(locationChangingRegistration == null)

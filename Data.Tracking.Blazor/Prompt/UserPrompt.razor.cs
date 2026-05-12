@@ -116,7 +116,7 @@ namespace Oarw.Data.Tracking.Blazor.Prompt
         {
             if (PromptProvider != null)
             {
-                PromptProvider.Show(this);
+                await PromptProvider.Show(this);
             }
             else
             {

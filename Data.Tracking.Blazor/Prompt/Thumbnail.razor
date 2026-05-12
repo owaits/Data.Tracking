@@ -1,10 +1,10 @@
 ﻿@if(!string.IsNullOrEmpty(Url))
 {
-    <img src="@Url" role="button" class="card-img-top bg-light img-zoom @(Class)" style="width: 80px; height:45px;" @onclick="@ShowViewer" />
+    <img src="@Url" role="button" class="card-img-top bg-light img-zoom @(Class)" style="width: 80px; height:45px;" @onclick="@ShowViewer" alt="@Label" />
   
-    <UserPrompt @ref="viewer">
+    <UserPrompt @ref="viewer" Title="@Label">
         <ChildContent>
-            <img src="@Url" class="card-img-top img-zoom bg-light" style="width: 100%" />
+            <img src="@Url" class="card-img-top img-zoom bg-light" style="width: 100%" alt="@Label" />
         </ChildContent>
         <Footer></Footer>        
     </UserPrompt>

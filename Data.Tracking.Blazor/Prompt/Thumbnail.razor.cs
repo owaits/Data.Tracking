@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using System;
+using System.Threading.Tasks;
 
 namespace Oarw.Data.Tracking.Blazor.Prompt
 {
@@ -7,8 +8,11 @@ namespace Oarw.Data.Tracking.Blazor.Prompt
     {
         private UserPrompt viewer;
 
-        [Parameter]
+        [Parameter, EditorRequired]
         public string Url { get; set; }
+
+        [Parameter, EditorRequired]
+        public string Label { get; set; }
 
         [Parameter]
         public string Class { get; set; }
@@ -24,10 +28,10 @@ namespace Oarw.Data.Tracking.Blazor.Prompt
             }
         }
 
-        protected void ShowViewer()
+        protected async Task ShowViewer()
         {
             if(viewer != null)
-                viewer.Show();
+                await viewer.Show();
 
             Console.WriteLine("click");
         }

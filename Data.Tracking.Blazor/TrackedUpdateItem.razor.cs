@@ -47,7 +47,7 @@ namespace Oarw.Data.Tracking.Blazor
         public Action afterUpdate { get; set; }
 
         [Parameter]
-        public RenderFragment<TItem> EditContent { get; set; }
+        public RenderFragment<TItem> EditTemplate { get; set; }
 
 
         protected override void OnInitialized()
@@ -79,6 +79,23 @@ namespace Oarw.Data.Tracking.Blazor
             }
         }
 
+        public bool TryGetEditTemplate(ITrackableObject item, out RenderFragment editTemplate)
+        {
+            if(EditTemplate == null)
+            {
+                editTemplate = null;
+                return false;
+            }
+
+            editTemplate = EditTemplate((TItem)item);
+            return true;
+        }
+
+        public bool CanUpdate(ITrackableObject item)
+        {
+            return typeof(TItem) == item.GetType();
+        }
+
         public bool HasChanges()
         {
             return editItems != null && editItems.IsTracking() && editItems.HasChanges();
@@ -87,6 +104,45 @@ namespace Oarw.Data.Tracking.Blazor
         public bool IsPrintRequired()
         {
             return editItems != null && editItems.IsTracking() && editItems.IsPrintRequired();
+        }
+
+        public async Task<bool> Create(IEnumerable<ITrackableObject> items)
+        {
+            var response = await Http.PostAsJsonAsync(Url, items);
+
+            if (!response.IsSuccessStatusCode)
+                return false;
+
+            return true;
+        }
+
+        public async Task<bool> Update(IEnumerable<ITrackableObject> items)
+        {
+            if (items.Any(item => item.IsModified(true)))
+            {
+                //Put the changes to the edit item on the server.
+                var response = await Http.PutAsJsonAsync(Url, items);
+
+                if (!response.IsSuccessStatusCode)
+                    return false;
+
+                //Delete any child items that require deletion.
+                foreach (var parentItem in items)
+                { 
+                    if (parentItem.IsDeleted(out IEnumerable<ITrackableObject> subDeleteItems))
+                    {
+                        foreach (var item in subDeleteItems)
+                        {
+                            await Http.DeleteAsync(Url + $"/{item.Id}");
+                        }
+                    }
+
+                    //After we have saved these changes to the server, start tracking again to reset changes.
+                    parentItem.StartTracking();
+                }                
+            }
+
+            return true;
         }
 
         public async Task CancelUpdate()

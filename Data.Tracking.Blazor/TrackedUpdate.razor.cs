@@ -25,9 +25,9 @@ namespace Oarw.Data.Tracking.Blazor
 
         private string selectedPrintProfile { get; set; }
 
-        private HashSet<ITrackedUpdateItem> updates = new HashSet<ITrackedUpdateItem>();
+        private HashSet<ITrackedUpdateBinding> updates = new HashSet<ITrackedUpdateBinding>();
 
-        public HashSet<ITrackedUpdateItem> Updates { get { return updates; } }
+        public HashSet<ITrackedUpdateBinding> Updates { get { return updates; } }
 
         private System.Timers.Timer autoSaveTimer;
 
@@ -51,6 +51,12 @@ namespace Oarw.Data.Tracking.Blazor
                 autoSaveTimer.Elapsed += AutoSave;
                 autoSaveTimer.Enabled = true;
             }
+        }
+
+        public ITrackedUpdateBinding GetUpdateForModel(ITrackableObject editItem)
+        {
+            return Updates.FirstOrDefault(item => item.CanUpdate(editItem));
+
         }
 
         private void AutoSave(Object source, System.Timers.ElapsedEventArgs e)

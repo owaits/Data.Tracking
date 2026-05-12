@@ -7,17 +7,20 @@
 @if(TestData != null)
 {
     <TrackedEditor TItem="DemoData"  url="" Context="editData">
-        <EditModal>
-            <input type="text" @bind-value="@editData.Name" />
-            <InputDateTime @bind-Value="@editData.StartDate" />
-        </EditModal>
+        <Bindings>
+            <TrackedUpdateBinding Url="" EditItems="EditItems" TItem="DemoData" Context="updateData">
+                <EditTemplate>
+                    @if(updateData != null)
+                    {
+                        <input type="text" @bind-value="@updateData.Name" />
+                        <InputDateTime @bind-Value="@updateData.StartDate" />
+                    }
+                </EditTemplate>
+            </TrackedUpdateBinding>
+        </Bindings>
         <ChildContent>
             <input type="text" @bind-value="@TestData.Name"/>
             <TrackedEditButton Create="@(()=> TestData)" />
-
-                <TrackedUpdate>
-                    <TrackedUpdateItem Url="" EditItems="EditItems" TItem="DemoData" />
-                </TrackedUpdate>
         </ChildContent>
     </TrackedEditor>
 }
