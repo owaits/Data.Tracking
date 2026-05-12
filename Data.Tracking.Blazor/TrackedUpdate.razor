@@ -14,7 +14,7 @@
     {
         @foreach(var error in Errors)
         {
-            <strong class="me-auto">@error.Title</strong>: @error.Message
+            <strong class="me-auto">@(error.Title):</strong> @(error.Message)
         } 
     }
     else if (NextAutoSave != null)
