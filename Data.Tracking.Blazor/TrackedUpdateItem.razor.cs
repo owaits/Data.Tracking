@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +20,9 @@ namespace Oarw.Data.Tracking.Blazor
 
         [Inject]
         public IServiceProvider Services { get; set; }
+
+        [Inject]
+        public ILogger<TrackedUpdateItem<TItem>> Log { get; set; }
 
         public ITrackedPrintService print { get; set;  }
 
@@ -227,6 +231,8 @@ namespace Oarw.Data.Tracking.Blazor
             }
             catch (Exception ex)
             {
+                Log.LogError(ex, "Error updating tracked items");
+
                 errors.Add(new TrackedUpdateError()
                 {
                     Title = "Error",
@@ -253,6 +259,8 @@ namespace Oarw.Data.Tracking.Blazor
             }
             catch (Exception ex)
             {
+                Log.LogError(ex, "Error printing tracked items");
+
                 errors.Add(new TrackedUpdateError()
                 {
                     Title = "Error",
